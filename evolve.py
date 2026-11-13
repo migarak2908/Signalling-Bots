@@ -67,6 +67,7 @@ def evolve(
     step_all = jax.jit(jax.vmap(generation))
 
     best, mean = [], []
+    print(f"{len(seeds)} seed(s), {cfg.n_generations} generations; compiling (first generation is slow)...", flush=True)
     clock = time.time()
     for gen in range(cfg.n_generations):
         keys, populations, scores = step_all(keys, populations)
@@ -74,7 +75,10 @@ def evolve(
         mean.append(scores.mean(axis=1))
         if gen % log_every == 0 or gen == cfg.n_generations - 1:
             per_seed = " ".join(f"{b:.2f}" for b in best[-1])
-            print(f"gen {gen:4d}  best per seed: {per_seed}  ({time.time() - clock:.0f}s)")
+            elapsed = time.time() - clock
+            left = elapsed / (gen + 1) * (cfg.n_generations - gen - 1)
+            print(f"gen {gen:4d}/{cfg.n_generations}  best per seed: {per_seed}  "
+                  f"({elapsed / 60:.1f} min elapsed, ~{left / 60:.1f} min left)", flush=True)
 
     n_elite = round(cfg.pop_size * cfg.elite_fraction)
     history = {"best": np.stack(best, axis=1), "mean": np.stack(mean, axis=1)}
@@ -127,7 +131,7 @@ def main(name: str, seeds: list[int], n_generations: int):
             summary["heldout_ablated"] = heldout_results(best, run_cfg, hide_colour=True)
         run_history = {k: v[i] for k, v in history.items()}
         out = save_run(Path("results") / name / f"s{seed}_g{n_generations}", run_cfg, elites[i], run_history, summary)
-        print(f"seed {seed}: held-out score {summary['heldout']['score']:.3f}  -> {out}")
+        print(f"seed {seed}: held-out score {summary['heldout']['score']:.3f}  -> {out}", flush=True)
         plot_fitness(out)
         plot_run(out)
 
