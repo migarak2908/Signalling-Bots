@@ -1,0 +1,4 @@
+jax>=0.4.30
+numpy
+matplotlib
+pytest

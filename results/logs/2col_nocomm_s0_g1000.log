@@ -1,0 +1,38 @@
+gen    0  best 0.498  mean 0.008  (0s)
+gen   50  best 0.537  mean 0.239  (2s)
+gen  100  best 0.578  mean 0.263  (4s)
+gen  150  best 0.527  mean 0.220  (6s)
+gen  200  best 0.578  mean 0.258  (7s)
+gen  250  best 0.582  mean 0.232  (9s)
+gen  300  best 0.505  mean 0.213  (11s)
+gen  350  best 0.552  mean 0.226  (13s)
+gen  400  best 0.580  mean 0.240  (15s)
+gen  450  best 0.512  mean 0.205  (16s)
+gen  500  best 0.582  mean 0.223  (18s)
+gen  550  best 0.609  mean 0.238  (20s)
+gen  600  best 0.566  mean 0.236  (22s)
+gen  650  best 0.532  mean 0.234  (24s)
+gen  700  best 0.609  mean 0.315  (25s)
+gen  750  best 0.532  mean 0.236  (27s)
+gen  800  best 0.500  mean 0.234  (29s)
+gen  850  best 0.531  mean 0.230  (30s)
+gen  900  best 0.547  mean 0.269  (32s)
+gen  950  best 0.542  mean 0.253  (34s)
+gen  999  best 0.641  mean 0.274  (36s)
+{
+  "heldout": {
+    "score": 0.5504456758499146,
+    "success": 0.5,
+    "score_per_colour": [
+      0.10089126229286194,
+      1.0
+    ],
+    "success_per_colour": [
+      0.0,
+      1.0
+    ],
+    "success_target_first": 0.4399999976158142,
+    "success_target_not_first": 0.5600000023841858
+  }
+}
+saved to results/step1_no_comm_s0_g1000

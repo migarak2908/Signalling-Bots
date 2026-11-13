@@ -1,0 +1,30 @@
+{
+  "heldout": {
+    "score": 0.7488847374916077,
+    "success": 0.7199999690055847,
+    "score_per_colour": [
+      0.9995497465133667,
+      0.49821969866752625
+    ],
+    "success_per_colour": [
+      1.0,
+      0.4399999976158142
+    ],
+    "success_target_first": 1.0,
+    "success_target_not_first": 0.4399999976158142
+  },
+  "heldout_ablated": {
+    "score": 0.5502046942710876,
+    "success": 0.5,
+    "score_per_colour": [
+      0.9995496273040771,
+      0.10085969418287277
+    ],
+    "success_per_colour": [
+      1.0,
+      0.0
+    ],
+    "success_target_first": 0.5600000023841858,
+    "success_target_not_first": 0.4399999976158142
+  }
+}

@@ -1,0 +1,28 @@
+gen    0  best per seed: 0.46 0.58 0.49 0.39 0.55  (1s)
+gen   50  best per seed: 0.54 0.52 0.60 0.54 0.65  (18s)
+gen  100  best per seed: 0.58 0.55 0.58 0.56 0.89  (47s)
+gen  150  best per seed: 0.54 0.57 0.53 0.56 0.97  (90s)
+gen  200  best per seed: 0.60 0.52 0.54 0.55 0.95  (120s)
+gen  250  best per seed: 0.59 0.57 0.54 0.54 0.96  (156s)
+gen  300  best per seed: 0.50 0.51 0.54 0.53 0.98  (184s)
+gen  350  best per seed: 0.60 0.64 0.59 0.53 0.98  (202s)
+gen  400  best per seed: 0.58 0.64 0.55 0.54 0.98  (221s)
+gen  450  best per seed: 0.51 0.51 0.60 0.54 0.99  (236s)
+gen  500  best per seed: 0.58 0.60 0.59 0.60 0.99  (255s)
+gen  550  best per seed: 0.61 0.50 0.89 0.57 0.99  (281s)
+gen  600  best per seed: 0.57 0.58 0.91 0.57 0.99  (309s)
+gen  650  best per seed: 0.53 0.52 0.76 0.61 0.99  (334s)
+gen  700  best per seed: 0.61 0.59 0.72 0.55 1.00  (358s)
+gen  750  best per seed: 0.53 0.50 0.90 0.58 1.00  (373s)
+gen  800  best per seed: 0.50 0.59 0.91 0.63 1.00  (396s)
+gen  850  best per seed: 0.57 0.55 0.86 0.56 1.00  (416s)
+gen  900  best per seed: 0.55 0.54 0.85 0.55 1.00  (445s)
+gen  950  best per seed: 0.54 0.63 0.87 0.54 1.00  (462s)
+gen  999  best per seed: 0.64 0.55 0.92 0.60 1.00  (481s)
+seed 0: held-out score 0.550  -> results/step2_both_2col_s0_g1000
+seed 1: held-out score 0.550  -> results/step2_both_2col_s1_g1000
+seed 2: held-out score 0.807  -> results/step2_both_2col_s2_g1000
+seed 3: held-out score 0.550  -> results/step2_both_2col_s3_g1000
+seed 4: held-out score 0.997  -> results/step2_both_2col_s4_g1000
+
+[exited with code 0]

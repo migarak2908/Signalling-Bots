@@ -1,0 +1,92 @@
+gen    0  best 0.387  mean 0.008  (0s)
+gen   50  best 0.541  mean 0.200  (4s)
+gen  100  best 0.560  mean 0.195  (8s)
+gen  150  best 0.561  mean 0.199  (11s)
+gen  200  best 0.546  mean 0.201  (15s)
+gen  250  best 0.542  mean 0.192  (19s)
+gen  300  best 0.525  mean 0.174  (23s)
+gen  350  best 0.530  mean 0.187  (27s)
+gen  400  best 0.544  mean 0.209  (30s)
+gen  450  best 0.540  mean 0.226  (34s)
+gen  500  best 0.650  mean 0.227  (38s)
+gen  550  best 0.574  mean 0.227  (42s)
+gen  600  best 0.569  mean 0.212  (46s)
+gen  650  best 0.610  mean 0.282  (50s)
+gen  700  best 0.548  mean 0.246  (54s)
+gen  750  best 0.575  mean 0.247  (59s)
+gen  800  best 0.562  mean 0.265  (63s)
+gen  850  best 0.919  mean 0.292  (67s)
+gen  900  best 0.552  mean 0.237  (72s)
+gen  950  best 0.915  mean 0.323  (77s)
+gen 1000  best 0.872  mean 0.285  (81s)
+gen 1050  best 0.921  mean 0.341  (86s)
+gen 1100  best 0.795  mean 0.286  (91s)
+gen 1150  best 0.756  mean 0.267  (96s)
+gen 1200  best 0.656  mean 0.224  (101s)
+gen 1250  best 0.696  mean 0.279  (106s)
+gen 1300  best 0.894  mean 0.291  (111s)
+gen 1350  best 0.749  mean 0.259  (116s)
+gen 1400  best 0.903  mean 0.295  (121s)
+gen 1450  best 0.791  mean 0.275  (125s)
+gen 1500  best 0.757  mean 0.286  (130s)
+gen 1550  best 0.775  mean 0.251  (135s)
+gen 1600  best 0.909  mean 0.286  (139s)
+gen 1650  best 0.768  mean 0.247  (144s)
+gen 1700  best 0.684  mean 0.227  (148s)
+gen 1750  best 0.877  mean 0.298  (153s)
+gen 1800  best 0.772  mean 0.258  (157s)
+gen 1850  best 0.918  mean 0.291  (161s)
+gen 1900  best 0.665  mean 0.227  (166s)
+gen 1950  best 0.767  mean 0.247  (170s)
+gen 2000  best 0.874  mean 0.244  (174s)
+gen 2050  best 0.612  mean 0.157  (179s)
+gen 2100  best 0.678  mean 0.201  (183s)
+gen 2150  best 0.803  mean 0.233  (188s)
+gen 2200  best 0.805  mean 0.201  (192s)
+gen 2250  best 0.890  mean 0.253  (197s)
+gen 2300  best 0.790  mean 0.254  (202s)
+gen 2350  best 0.842  mean 0.234  (216s)
+gen 2400  best 0.881  mean 0.276  (232s)
+gen 2450  best 0.760  mean 0.228  (245s)
+gen 2500  best 0.676  mean 0.224  (256s)
+gen 2550  best 0.881  mean 0.286  (274s)
+gen 2600  best 0.792  mean 0.257  (287s)
+gen 2650  best 0.737  mean 0.255  (304s)
+gen 2700  best 0.999  mean 0.318  (322s)
+gen 2750  best 0.999  mean 0.285  (340s)
+gen 2800  best 0.874  mean 0.314  (356s)
+gen 2850  best 0.754  mean 0.243  (379s)
+gen 2900  best 0.924  mean 0.290  (393s)
+gen 2950  best 0.880  mean 0.314  (406s)
+gen 2999  best 0.786  mean 0.254  (415s)
+{
+  "heldout": {
+    "score": 0.7488847374916077,
+    "success": 0.7199999690055847,
+    "score_per_colour": [
+      0.9995497465133667,
+      0.49821969866752625
+    ],
+    "success_per_colour": [
+      1.0,
+      0.4399999976158142
+    ],
+    "success_target_first": 1.0,
+    "success_target_not_first": 0.4399999976158142
+  },
+  "heldout_ablated": {
+    "score": 0.5502046942710876,
+    "success": 0.5,
+    "score_per_colour": [
+      0.9995496273040771,
+      0.10085969418287277
+    ],
+    "success_per_colour": [
+      1.0,
+      0.0
+    ],
+    "success_target_first": 0.5600000023841858,
+    "success_target_not_first": 0.4399999976158142
+  }
+}
+saved to results/step2_both_2col_s3_g3000
