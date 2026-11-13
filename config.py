@@ -44,11 +44,18 @@ class Config:
     pulse_period: float = 1.0
     cheat_stop_threshold: float = 0.5
 
-    # --- Evolution (truncation selection + elitism, Gaussian mutation, no crossover) ---
+    # --- Evolution ---
+    algorithm: str = "ga"  # file in evolvers/: "ga" or "neat"
     pop_size: int = 400
     elite_fraction: float = 0.05
     mutation_std: float = 0.1
     n_generations: int = 1000
+
+    # --- NEAT-style evolver only ---
+    n_species: int = 10
+    neat_survival: float = 0.2  # top fraction of each species that can be a parent
+    neat_add_connection: float = 0.3  # chance per child of switching on one connection
+    neat_remove_connection: float = 0.1  # chance per child of switching off one connection
 
     # --- Fitness and evaluation ---
     n_layouts: int = 4

@@ -64,3 +64,22 @@ def velocity(params: Params, state: jax.Array, cfg: Config) -> jax.Array:
     return vel
 
 
+
+
+# --- Which genes are connections (used by evolvers that grow networks). A weight gene of 0 = no connection.
+
+
+def _gene_mask(cfg: Config, w: jax.Array, g: jax.Array) -> jax.Array:
+    """Full-genome mask from one agent's (n, n) recurrent mask and (k, n) input mask. Biases and taus: False."""
+    agent = jnp.concatenate([w.ravel(), jnp.zeros(2 * cfg.n_neurons, bool), g.ravel()])
+    return jnp.tile(agent, 2)
+
+
+def connection_genes(cfg: Config) -> jax.Array:
+    n, k = cfg.n_neurons, cfg.n_inputs
+    return _gene_mask(cfg, jnp.ones((n, n), bool), jnp.ones((k, n), bool))
+
+
+def input_to_motor_genes(cfg: Config) -> jax.Array:
+    n, k = cfg.n_neurons, cfg.n_inputs
+    return _gene_mask(cfg, jnp.zeros((n, n), bool), jnp.zeros((k, n), bool).at[:, cfg.motor_index].set(True))

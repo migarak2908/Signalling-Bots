@@ -1,10 +1,11 @@
-"""Evolution: truncation selection with elitism, Gaussian mutation, no crossover.
+"""The evolution loop. The algorithm itself is a swappable file in evolvers/ (ga.py, neat.py).
 
-Run from the repo root:  python -m evolve 2col_comm --seeds 0 1 2 3 4 --generations 1000
-Results go to results/<experiment>/s<seed>_g<generations>/.
+Run from the repo root:  python -m evolve 2col_comm --algorithm ga --neurons 6 --seeds 0 1 2 --generations 1000
+Results go to results/<experiment>/<algorithm>_n<neurons>_s<seed>_g<generations>/.
 """
 
 import dataclasses
+import importlib
 import json
 import time
 from pathlib import Path
@@ -24,22 +25,6 @@ from analysis.plot_trajectories import plot_run
 FitnessFn = Callable[[jax.Array, Layout], jax.Array]  # (genome, layouts) -> mean score
 
 
-# --- The evolver. Swap these two functions to change the algorithm.
-
-
-def init_population(key: jax.Array, n_genes: int, cfg: Config) -> jax.Array:
-    return jax.random.uniform(key, (cfg.pop_size, n_genes), minval=-1.0, maxval=1.0)
-
-
-def next_generation(key: jax.Array, population: jax.Array, scores: jax.Array, cfg: Config) -> jax.Array:
-    """Elites first (best-first, unchanged), then mutated copies of them, each elite equally often."""
-    n_elite = round(cfg.pop_size * cfg.elite_fraction)
-    elites = population[jnp.argsort(-scores)[:n_elite]]
-    parents = elites[jnp.arange(cfg.pop_size - n_elite) % n_elite]
-    children = parents + cfg.mutation_std * jax.random.normal(key, parents.shape)
-    return jnp.concatenate([elites, jnp.clip(children, -1.0, 1.0)])
-
-
 # --- The loop.
 
 
@@ -48,29 +33,32 @@ def evolve(
 ) -> tuple[jax.Array, dict]:
     """Evolve one independent population per seed, all at once (vmap over seeds).
 
-    Returns (elites, shape (n_seeds, n_elite, n_genes), best-first;
+    Each evolver (evolvers/<cfg.algorithm>.py) provides init, population and next_generation.
+    Returns (best genomes of the last scored generation, shape (n_seeds, n_elite, n_genes), best-first;
              history with "best" and "mean" scores, shape (n_seeds, n_generations)).
     """
+    evolver = importlib.import_module(f"evolvers.{cfg.algorithm}")
 
     def start(seed):
         key, init_key = jax.random.split(jax.random.key(seed))
-        return key, init_population(init_key, n_genes, cfg)
+        return key, evolver.init(init_key, n_genes, cfg)
 
-    def generation(key, population):
+    def generation(key, state):
         key, gen_key = jax.random.split(key)
         layout_key, mutate_key = jax.random.split(gen_key)
         layouts = sample_layouts(layout_key, cfg.n_layouts, cfg)  # same trials for every genome in this population
+        population = evolver.population(state)
         scores = jax.vmap(fitness_fn, in_axes=(0, None))(population, layouts)
-        return key, next_generation(mutate_key, population, scores, cfg), scores
+        return key, evolver.next_generation(mutate_key, state, scores, cfg), population, scores
 
-    keys, populations = jax.vmap(start)(jnp.array(seeds))
+    keys, states = jax.vmap(start)(jnp.array(seeds))
     step_all = jax.jit(jax.vmap(generation))
 
     best, mean = [], []
     print(f"{len(seeds)} seed(s), {cfg.n_generations} generations; compiling (first generation is slow)...", flush=True)
     clock = time.time()
     for gen in range(cfg.n_generations):
-        keys, populations, scores = step_all(keys, populations)
+        keys, states, populations, scores = step_all(keys, states)
         best.append(scores.max(axis=1))
         mean.append(scores.mean(axis=1))
         if gen % log_every == 0 or gen == cfg.n_generations - 1:
@@ -81,8 +69,9 @@ def evolve(
                   f"({elapsed / 60:.1f} min elapsed, ~{left / 60:.1f} min left)", flush=True)
 
     n_elite = round(cfg.pop_size * cfg.elite_fraction)
+    order = jnp.argsort(-scores, axis=1)[:, :n_elite]
     history = {"best": np.stack(best, axis=1), "mean": np.stack(mean, axis=1)}
-    return populations[:, :n_elite], history
+    return jnp.take_along_axis(populations, order[:, :, None], axis=1), history
 
 
 def save_run(out: Path, cfg: Config, elites: jax.Array, history: dict, summary: dict) -> Path:
@@ -118,9 +107,11 @@ EXPERIMENTS = {
 }
 
 
-def main(name: str, seeds: list[int], n_generations: int):
+def main(name: str, algorithm: str, n_neurons: int, seeds: list[int], n_generations: int):
     hide, n_colours = EXPERIMENTS[name]
-    cfg = dataclasses.replace(Config(), n_generations=n_generations, n_colours=n_colours)
+    cfg = dataclasses.replace(
+        Config(), n_generations=n_generations, n_colours=n_colours, algorithm=algorithm, n_neurons=n_neurons
+    )
     elites, history = evolve(lambda genome, layouts: fitness(genome, layouts, cfg, hide), cfg.genome_size, cfg, seeds)
 
     for i, seed in enumerate(seeds):
@@ -130,7 +121,8 @@ def main(name: str, seeds: list[int], n_generations: int):
         if not hide:
             summary["heldout_ablated"] = heldout_results(best, run_cfg, hide_colour=True)
         run_history = {k: v[i] for k, v in history.items()}
-        out = save_run(Path("results") / name / f"s{seed}_g{n_generations}", run_cfg, elites[i], run_history, summary)
+        run_name = f"{algorithm}_n{n_neurons}_s{seed}_g{n_generations}"
+        out = save_run(Path("results") / name / run_name, run_cfg, elites[i], run_history, summary)
         print(f"seed {seed}: held-out score {summary['heldout']['score']:.3f}  -> {out}", flush=True)
         plot_fitness(out)
         plot_run(out)
@@ -141,7 +133,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("experiment", choices=EXPERIMENTS)
+    parser.add_argument("--algorithm", choices=["ga", "neat"], default=Config.algorithm)
+    parser.add_argument("--neurons", type=int, default=Config.n_neurons)
     parser.add_argument("--seeds", type=int, nargs="+", default=[Config.seed])
     parser.add_argument("--generations", type=int, default=Config.n_generations)
     args = parser.parse_args()
-    main(args.experiment, args.seeds, args.generations)
+    main(args.experiment, args.algorithm, args.neurons, args.seeds, args.generations)

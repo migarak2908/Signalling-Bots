@@ -37,11 +37,12 @@ def plot_fitness(run_dir: Path) -> Path:
 
     best, mean = history["best"], history["mean"]
     gens = np.arange(len(best))
-    smooth_gens = gens[SMOOTH - 1:]
+    window = min(SMOOTH, len(best))
+    smooth_gens = gens[window - 1:]
 
     fig, ax = plt.subplots(figsize=(8, 4.2))
     ax.plot(gens, best, color=INK, lw=0.6, alpha=0.3)
-    ax.plot(smooth_gens, rolling_mean(best, SMOOTH), color=INK, lw=1.8, label=f"best ({SMOOTH}-gen average)")
+    ax.plot(smooth_gens, rolling_mean(best, window), color=INK, lw=1.8, label=f"best ({window}-gen average)")
     ax.plot(gens, mean, color=MUTED, lw=1.2, label="population mean")
 
     heldout = summary["heldout"]["score"]
