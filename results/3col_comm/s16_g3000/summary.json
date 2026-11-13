@@ -1,0 +1,34 @@
+{
+  "heldout": {
+    "score": 0.714989423751831,
+    "success": 0.6666666865348816,
+    "score_per_colour": [
+      0.9955980181694031,
+      0.15351876616477966,
+      0.9958515167236328
+    ],
+    "success_per_colour": [
+      1.0,
+      0.0,
+      1.0
+    ],
+    "success_target_first": 0.6800000071525574,
+    "success_target_not_first": 0.6599999666213989
+  },
+  "heldout_ablated": {
+    "score": 0.42553678154945374,
+    "success": 0.3333333432674408,
+    "score_per_colour": [
+      0.12817314267158508,
+      0.1535186916589737,
+      0.994918704032898
+    ],
+    "success_per_colour": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "success_target_first": 0.2800000011920929,
+    "success_target_not_first": 0.35999998450279236
+  }
+}
