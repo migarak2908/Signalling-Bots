@@ -12,7 +12,7 @@ import numpy as np
 
 from config import Config
 from env import sample_layouts
-from rollout import rollout, rollout_cheating, run_grid
+from rollout import make_trial, rollout, rollout_cheating, run_grid
 
 COLOUR_NAMES = ["red", "green", "blue"]
 COLOUR_HEX = ["#c8433a", "#16916a", "#3a6fc8"]  # CVD-checked; lines are also labelled and dashed
@@ -95,8 +95,9 @@ def plot_run(run_dir: Path, n_examples: int = 4):
 
     cfg = load_config(run_dir)
     genome = jnp.asarray(np.load(run_dir / "elites.npy")[0])
+    mode = run_dir.parent.name.split("_", 1)[1]  # e.g. 3col_scripted -> scripted
     layouts = sample_layouts(jax.random.key(cfg.heldout_seed), n_examples, cfg)
-    positions = run_grid(lambda l, c: rollout(genome, l, c, cfg), layouts, cfg.n_colours)
+    positions = run_grid(make_trial(genome, cfg, mode), layouts, cfg.n_colours)
     plot_trials(
         positions, layouts, cfg,
         row_labels=[f"held-out layout {i}" for i in range(n_examples)],

@@ -18,7 +18,7 @@ import numpy as np
 from config import Config
 from env import Layout, sample_layouts
 from fitness import fitness, success, trial_score
-from rollout import rollout, run_grid
+from rollout import make_trial, run_grid
 from analysis.plot_fitness import plot_fitness
 from analysis.plot_trajectories import plot_run
 
@@ -83,9 +83,9 @@ def save_run(out: Path, cfg: Config, elites: jax.Array, history: dict, summary: 
     return out
 
 
-def heldout_results(genome: jax.Array, cfg: Config, hide_colour: bool) -> dict:
+def heldout_results(genome: jax.Array, cfg: Config, mode: str) -> dict:
     held = sample_layouts(jax.random.key(cfg.heldout_seed), cfg.n_heldout_layouts, cfg)
-    positions = run_grid(lambda l, c: rollout(genome, l, c, cfg, hide_colour), held, cfg.n_colours)
+    positions = run_grid(make_trial(genome, cfg, mode), held, cfg.n_colours)
     scores, successes = trial_score(positions, held.landmark_x, cfg), success(positions, held.landmark_x, cfg)
     target_first = held.landmark_x == held.landmark_x.min(axis=1, keepdims=True)  # target is the leftmost landmark
     return {
@@ -98,28 +98,31 @@ def heldout_results(genome: jax.Array, cfg: Config, hide_colour: bool) -> dict:
     }
 
 
-# Experiments: name -> (hide the signaller's colour inputs?, number of colours)
+# Experiments: name -> (mode, number of colours). Modes as in rollout.make_trial.
 EXPERIMENTS = {
-    "2col_nocomm": (True, 2),
-    "2col_comm": (False, 2),
-    "3col_nocomm": (True, 3),
-    "3col_comm": (False, 3),
+    "2col_nocomm": ("nocomm", 2),
+    "2col_comm": ("comm", 2),
+    "2col_scripted": ("scripted", 2),
+    "3col_nocomm": ("nocomm", 3),
+    "3col_comm": ("comm", 3),
+    "3col_scripted": ("scripted", 3),
 }
 
 
 def main(name: str, algorithm: str, n_neurons: int, seeds: list[int], n_generations: int):
-    hide, n_colours = EXPERIMENTS[name]
+    mode, n_colours = EXPERIMENTS[name]
     cfg = dataclasses.replace(
         Config(), n_generations=n_generations, n_colours=n_colours, algorithm=algorithm, n_neurons=n_neurons
     )
-    elites, history = evolve(lambda genome, layouts: fitness(genome, layouts, cfg, hide), cfg.genome_size, cfg, seeds)
+    n_genes = cfg.n_params_per_agent if mode == "scripted" else cfg.genome_size
+    elites, history = evolve(lambda genome, layouts: fitness(genome, layouts, cfg, mode), n_genes, cfg, seeds)
 
     for i, seed in enumerate(seeds):
         run_cfg = dataclasses.replace(cfg, seed=seed)
         best = elites[i, 0]
-        summary = {"heldout": heldout_results(best, run_cfg, hide)}
-        if not hide:
-            summary["heldout_ablated"] = heldout_results(best, run_cfg, hide_colour=True)
+        summary = {"heldout": heldout_results(best, run_cfg, mode)}
+        if mode == "comm":
+            summary["heldout_ablated"] = heldout_results(best, run_cfg, "nocomm")
         run_history = {k: v[i] for k, v in history.items()}
         run_name = f"{algorithm}_n{n_neurons}_s{seed}_g{n_generations}"
         out = save_run(Path("results") / name / run_name, run_cfg, elites[i], run_history, summary)

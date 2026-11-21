@@ -87,6 +87,16 @@ def rollout_scripted(receiver_genes: jax.Array, layout: Layout, colour: jax.Arra
     return positions
 
 
+def make_trial(genome: jax.Array, cfg: Config, mode: str) -> Callable[[Layout, jax.Array], jax.Array]:
+    """trial(layout, colour) for one genome.
+
+    mode: "comm" (both agents), "nocomm" (signaller's colour hidden) or "scripted" (genome is a receiver only).
+    """
+    if mode == "scripted":
+        return lambda layout, colour: rollout_scripted(genome, layout, colour, cfg)
+    return lambda layout, colour: rollout(genome, layout, colour, cfg, hide_colour=mode == "nocomm")
+
+
 def run_grid(trial: Callable[[Layout, jax.Array], jax.Array], layouts: Layout, n_colours: int) -> jax.Array:
     """Run trial(layout, colour) for every layout with every colour.
 

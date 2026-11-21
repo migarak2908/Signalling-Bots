@@ -8,7 +8,7 @@ import jax.numpy as jnp
 
 from config import Config
 from env import Layout
-from rollout import rollout, rollout_cheating, run_grid
+from rollout import make_trial, rollout_cheating, run_grid
 
 
 def trial_score(positions: jax.Array, target_x: jax.Array, cfg: Config) -> jax.Array:
@@ -23,10 +23,9 @@ def success(positions: jax.Array, target_x: jax.Array, cfg: Config) -> jax.Array
     return jnp.abs(positions[..., -1, 1] - target_x) <= cfg.success_radius
 
 
-def fitness(genome: jax.Array, layouts: Layout, cfg: Config, hide_colour: bool = False) -> jax.Array:
-    """Mean trial score over every layout with every colour."""
-    trial = lambda layout, colour: rollout(genome, layout, colour, cfg, hide_colour)
-    positions = run_grid(trial, layouts, cfg.n_colours)
+def fitness(genome: jax.Array, layouts: Layout, cfg: Config, mode: str = "comm") -> jax.Array:
+    """Mean trial score over every layout with every colour. Modes as in rollout.make_trial."""
+    positions = run_grid(make_trial(genome, cfg, mode), layouts, cfg.n_colours)
     return trial_score(positions, layouts.landmark_x, cfg).mean()
 
 
