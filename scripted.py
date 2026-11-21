@@ -21,7 +21,7 @@ def cheating_receiver(
     return jnp.where(stopped, 0.0, cfg.v_max), stopped
 
 
-def scripted_signal(k: jax.Array, colour: jax.Array, cfg: Config) -> jax.Array:
+def scripted_pulses(k: jax.Array, colour: jax.Array, cfg: Config) -> jax.Array:
     """Tests whether a receiver can learn from a clean signal.
 
     Replaces the signaller: gives the receiver's proximity input at time step k as
@@ -31,3 +31,14 @@ def scripted_signal(k: jax.Array, colour: jax.Array, cfg: Config) -> jax.Array:
     pulse = since_start // cfg.pulse_period_steps
     in_pulse = since_start % cfg.pulse_period_steps < cfg.pulse_on_steps
     return jnp.where((since_start >= 0) & (pulse <= colour) & in_pulse, 1.0, 0.0)
+
+
+def scripted_level(k: jax.Array, colour: jax.Array, cfg: Config) -> jax.Array:
+    """An easier clean signal: a steady level instead of a count.
+
+    Level (colour + 1) / n_colours (with 3 colours: red 1/3, green 2/3, blue 1), held for the
+    same window the longest pulse train takes, then 0. Same length for every colour.
+    """
+    since_start = k - cfg.signal_start_step
+    on = (since_start >= 0) & (since_start < cfg.n_colours * cfg.pulse_period_steps)
+    return jnp.where(on, (colour + 1) / cfg.n_colours, 0.0)

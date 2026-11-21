@@ -18,7 +18,9 @@ from env import (
     proximity,
     target_onehot,
 )
-from scripted import cheating_receiver, scripted_signal
+from scripted import cheating_receiver, scripted_level, scripted_pulses
+
+SCRIPTED_SIGNALS = {"scripted": scripted_pulses, "scripted_level": scripted_level}
 
 
 def _inputs(prox: jax.Array, colour_inputs: jax.Array) -> jax.Array:
@@ -68,14 +70,16 @@ def rollout_cheating(layout: Layout, colour: jax.Array, cfg: Config) -> jax.Arra
     return positions
 
 
-def rollout_scripted(receiver_genes: jax.Array, layout: Layout, colour: jax.Array, cfg: Config) -> jax.Array:
-    """Receiver CTRNN fed the scripted signal. No signaller: its column stays at the start position."""
+def rollout_scripted(
+    receiver_genes: jax.Array, layout: Layout, colour: jax.Array, cfg: Config, signal: Callable = scripted_pulses
+) -> jax.Array:
+    """Receiver CTRNN fed a scripted signal(k, colour, cfg). No signaller: its column stays at the start position."""
     params = unpack(receiver_genes, cfg)
 
     def body(carry, k):
         rec_x, rec_state = carry
 
-        prox = scripted_signal(k, colour, cfg)
+        prox = signal(k, colour, cfg)
 
         rec_state = step(params, rec_state, _inputs(prox, landmark_sensors(rec_x, layout.landmark_x, cfg)), cfg)
         rec_x = move_receiver(rec_x, velocity(params, rec_state, cfg), cfg)
@@ -90,10 +94,11 @@ def rollout_scripted(receiver_genes: jax.Array, layout: Layout, colour: jax.Arra
 def make_trial(genome: jax.Array, cfg: Config, mode: str) -> Callable[[Layout, jax.Array], jax.Array]:
     """trial(layout, colour) for one genome.
 
-    mode: "comm" (both agents), "nocomm" (signaller's colour hidden) or "scripted" (genome is a receiver only).
+    mode: "comm" (both agents), "nocomm" (signaller's colour hidden), or a receiver-only genome fed a
+    scripted signal: "scripted" (pulse count) or "scripted_level" (steady level).
     """
-    if mode == "scripted":
-        return lambda layout, colour: rollout_scripted(genome, layout, colour, cfg)
+    if mode in SCRIPTED_SIGNALS:
+        return lambda layout, colour: rollout_scripted(genome, layout, colour, cfg, SCRIPTED_SIGNALS[mode])
     return lambda layout, colour: rollout(genome, layout, colour, cfg, hide_colour=mode == "nocomm")
 
 

@@ -11,7 +11,7 @@ import numpy as np
 from config import Config
 from env import sample_layouts
 from fitness import success, trial_score
-from rollout import make_trial, run_grid
+from rollout import SCRIPTED_SIGNALS, make_trial, run_grid
 from analysis.plot_fitness import plot_fitness
 from analysis.plot_trajectories import plot_run
 
@@ -20,9 +20,11 @@ EXPERIMENTS = {
     "2col_nocomm": ("nocomm", 2),
     "2col_comm": ("comm", 2),
     "2col_scripted": ("scripted", 2),
+    "2col_scripted_level": ("scripted_level", 2),
     "3col_nocomm": ("nocomm", 3),
     "3col_comm": ("comm", 3),
     "3col_scripted": ("scripted", 3),
+    "3col_scripted_level": ("scripted_level", 3),
 }
 
 
@@ -30,7 +32,7 @@ def setup(experiment: str, **changes) -> tuple[str, Config, int]:
     """Returns (mode, config, genome length). Scripted runs train a receiver only."""
     mode, n_colours = EXPERIMENTS[experiment]
     cfg = dataclasses.replace(Config(), n_colours=n_colours, **changes)
-    n_genes = cfg.n_params_per_agent if mode == "scripted" else cfg.genome_size
+    n_genes = cfg.n_params_per_agent if mode in SCRIPTED_SIGNALS else cfg.genome_size
     return mode, cfg, n_genes
 
 
