@@ -35,15 +35,19 @@ def plot_fitness(run_dir: Path) -> Path:
     held = sample_layouts(jax.random.key(cfg.heldout_seed), cfg.n_heldout_layouts, cfg)
     guess_score = float(random_landmark_baseline(held, cfg)[0].mean())
 
-    best, mean = history["best"], history["mean"]
+    gd = cfg.algorithm == "gd"
+    unit = "step" if gd else "generation"
+    best = history["best"]
     gens = np.arange(len(best))
     window = min(SMOOTH, len(best))
     smooth_gens = gens[window - 1:]
 
     fig, ax = plt.subplots(figsize=(8, 4.2))
     ax.plot(gens, best, color=INK, lw=0.6, alpha=0.3)
-    ax.plot(smooth_gens, rolling_mean(best, window), color=INK, lw=1.8, label=f"best ({window}-gen average)")
-    ax.plot(gens, mean, color=MUTED, lw=1.2, label="population mean")
+    label = "training score" if gd else "best"
+    ax.plot(smooth_gens, rolling_mean(best, window), color=INK, lw=1.8, label=f"{label} ({window}-{unit} average)")
+    if "mean" in history:
+        ax.plot(gens, history["mean"], color=MUTED, lw=1.2, label="population mean")
 
     heldout = summary["heldout"]["score"]
     ax.axhline(heldout, color=REFERENCE, lw=1, ls=":", label=f"held-out score of final best ({heldout:.2f})")
@@ -54,9 +58,9 @@ def plot_fitness(run_dir: Path) -> Path:
 
     ax.set_xlim(0, gens[-1])
     ax.set_ylim(0, 1)
-    ax.set_xlabel("generation", fontsize=9)
-    ax.set_ylabel("fitness (mean trial score)", fontsize=9)
-    ax.set_title(f"{run_dir.parent.name}/{run_dir.name}: fitness over generations", fontsize=11, loc="left", color=INK)
+    ax.set_xlabel("gradient step" if gd else "generation", fontsize=9)
+    ax.set_ylabel("mean trial score", fontsize=9)
+    ax.set_title(f"{run_dir.parent.name}/{run_dir.name}: score over {unit}s", fontsize=11, loc="left", color=INK)
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
     ax.tick_params(labelsize=8, colors=MUTED)

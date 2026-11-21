@@ -6,9 +6,7 @@ Results go to results/<experiment>/<algorithm>_n<neurons>_s<seed>_g<generations>
 
 import dataclasses
 import importlib
-import json
 import time
-from pathlib import Path
 from typing import Callable
 
 import jax
@@ -17,15 +15,10 @@ import numpy as np
 
 from config import Config
 from env import Layout, sample_layouts
-from fitness import fitness, success, trial_score
-from rollout import make_trial, run_grid
-from analysis.plot_fitness import plot_fitness
-from analysis.plot_trajectories import plot_run
+from experiments import EXPERIMENTS, finish_run, progress, setup
+from fitness import fitness
 
 FitnessFn = Callable[[jax.Array, Layout], jax.Array]  # (genome, layouts) -> mean score
-
-
-# --- The loop.
 
 
 def evolve(
@@ -62,11 +55,7 @@ def evolve(
         best.append(scores.max(axis=1))
         mean.append(scores.mean(axis=1))
         if gen % log_every == 0 or gen == cfg.n_generations - 1:
-            per_seed = " ".join(f"{b:.2f}" for b in best[-1])
-            elapsed = time.time() - clock
-            left = elapsed / (gen + 1) * (cfg.n_generations - gen - 1)
-            print(f"gen {gen:4d}/{cfg.n_generations}  best per seed: {per_seed}  "
-                  f"({elapsed / 60:.1f} min elapsed, ~{left / 60:.1f} min left)", flush=True)
+            progress(gen, cfg.n_generations, clock, "best per seed: " + " ".join(f"{b:.2f}" for b in best[-1]))
 
     n_elite = round(cfg.pop_size * cfg.elite_fraction)
     order = jnp.argsort(-scores, axis=1)[:, :n_elite]
@@ -74,61 +63,13 @@ def evolve(
     return jnp.take_along_axis(populations, order[:, :, None], axis=1), history
 
 
-def save_run(out: Path, cfg: Config, elites: jax.Array, history: dict, summary: dict) -> Path:
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "config.json").write_text(json.dumps(dataclasses.asdict(cfg), indent=2))
-    (out / "summary.json").write_text(json.dumps(summary, indent=2))
-    np.save(out / "elites.npy", np.asarray(elites))
-    np.savez(out / "history.npz", **history)
-    return out
-
-
-def heldout_results(genome: jax.Array, cfg: Config, mode: str) -> dict:
-    held = sample_layouts(jax.random.key(cfg.heldout_seed), cfg.n_heldout_layouts, cfg)
-    positions = run_grid(make_trial(genome, cfg, mode), held, cfg.n_colours)
-    scores, successes = trial_score(positions, held.landmark_x, cfg), success(positions, held.landmark_x, cfg)
-    target_first = held.landmark_x == held.landmark_x.min(axis=1, keepdims=True)  # target is the leftmost landmark
-    return {
-        "score": float(scores.mean()),
-        "success": float(successes.mean()),
-        "score_per_colour": scores.mean(axis=0).tolist(),
-        "success_per_colour": successes.mean(axis=0).tolist(),
-        "success_target_first": float(successes[target_first].mean()),
-        "success_target_not_first": float(successes[~target_first].mean()),
-    }
-
-
-# Experiments: name -> (mode, number of colours). Modes as in rollout.make_trial.
-EXPERIMENTS = {
-    "2col_nocomm": ("nocomm", 2),
-    "2col_comm": ("comm", 2),
-    "2col_scripted": ("scripted", 2),
-    "3col_nocomm": ("nocomm", 3),
-    "3col_comm": ("comm", 3),
-    "3col_scripted": ("scripted", 3),
-}
-
-
-def main(name: str, algorithm: str, n_neurons: int, seeds: list[int], n_generations: int):
-    mode, n_colours = EXPERIMENTS[name]
-    cfg = dataclasses.replace(
-        Config(), n_generations=n_generations, n_colours=n_colours, algorithm=algorithm, n_neurons=n_neurons
-    )
-    n_genes = cfg.n_params_per_agent if mode == "scripted" else cfg.genome_size
+def main(experiment: str, algorithm: str, n_neurons: int, seeds: list[int], n_generations: int):
+    mode, cfg, n_genes = setup(experiment, algorithm=algorithm, n_neurons=n_neurons, n_generations=n_generations)
     elites, history = evolve(lambda genome, layouts: fitness(genome, layouts, cfg, mode), n_genes, cfg, seeds)
-
     for i, seed in enumerate(seeds):
-        run_cfg = dataclasses.replace(cfg, seed=seed)
-        best = elites[i, 0]
-        summary = {"heldout": heldout_results(best, run_cfg, mode)}
-        if mode == "comm":
-            summary["heldout_ablated"] = heldout_results(best, run_cfg, "nocomm")
         run_history = {k: v[i] for k, v in history.items()}
-        run_name = f"{algorithm}_n{n_neurons}_s{seed}_g{n_generations}"
-        out = save_run(Path("results") / name / run_name, run_cfg, elites[i], run_history, summary)
-        print(f"seed {seed}: held-out score {summary['heldout']['score']:.3f}  -> {out}", flush=True)
-        plot_fitness(out)
-        plot_run(out)
+        run_cfg = dataclasses.replace(cfg, seed=seed)
+        finish_run(experiment, f"{algorithm}_n{n_neurons}_s{seed}_g{n_generations}", run_cfg, elites[i], run_history)
 
 
 if __name__ == "__main__":

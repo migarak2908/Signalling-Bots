@@ -18,6 +18,12 @@ def trial_score(positions: jax.Array, target_x: jax.Array, cfg: Config) -> jax.A
     return jnp.maximum(0.0, 1.0 - distance / cfg.score_range).mean(axis=-1)
 
 
+def distance_loss(positions: jax.Array, target_x: jax.Array, cfg: Config) -> jax.Array:
+    """Mean distance to the target over the last score_steps. For gradient descent: unlike the score, never flat."""
+    receiver_x = positions[..., -cfg.score_steps:, 1]
+    return jnp.abs(receiver_x - jnp.asarray(target_x)[..., None]).mean()
+
+
 def success(positions: jax.Array, target_x: jax.Array, cfg: Config) -> jax.Array:
     """True if the receiver ends within success_radius of the target. For reporting only."""
     return jnp.abs(positions[..., -1, 1] - target_x) <= cfg.success_radius

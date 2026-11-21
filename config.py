@@ -57,6 +57,11 @@ class Config:
     neat_add_connection: float = 0.3  # chance per child of switching on one connection
     neat_remove_connection: float = 0.1  # chance per child of switching off one connection
 
+    # --- Gradient descent (train_gd.py) ---
+    learning_rate: float = 0.01  # Adam, in gene units ([-1, 1])
+    max_grad_norm: float = 1.0  # gradients through 300 steps can blow up; cap their size
+    n_gd_steps: int = 3000
+
     # --- Fitness and evaluation ---
     n_layouts: int = 4
     n_heldout_layouts: int = 100
