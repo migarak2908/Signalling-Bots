@@ -1,0 +1,18 @@
+{
+  "heldout": {
+    "score": 0.04357246682047844,
+    "success": 0.0,
+    "score_per_colour": [
+      0.0,
+      0.005874868482351303,
+      0.12484252452850342
+    ],
+    "success_per_colour": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "success_target_first": 0.0,
+    "success_target_not_first": 0.0
+  }
+}

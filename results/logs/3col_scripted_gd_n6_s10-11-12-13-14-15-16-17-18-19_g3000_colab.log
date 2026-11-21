@@ -1,0 +1,82 @@
+10 seed(s), 3000 steps; compiling (first step is slow)...
+    0/3000  score per seed: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00  (0.1 min elapsed, ~176.3 min left)
+   50/3000  score per seed: 0.34 0.07 0.17 0.31 0.23 0.39 0.00 0.20 0.08 0.25  (0.1 min elapsed, ~4.1 min left)
+  100/3000  score per seed: 0.32 0.09 0.03 0.31 0.26 0.35 0.07 0.25 0.25 0.10  (0.1 min elapsed, ~2.4 min left)
+  150/3000  score per seed: 0.20 0.10 0.04 0.00 0.35 0.39 0.32 0.03 0.21 0.24  (0.1 min elapsed, ~1.8 min left)
+  200/3000  score per seed: 0.26 0.11 0.00 0.10 0.00 0.41 0.22 0.23 0.26 0.14  (0.1 min elapsed, ~1.4 min left)
+  250/3000  score per seed: 0.33 0.25 0.05 0.33 0.45 0.36 0.09 0.37 0.28 0.24  (0.1 min elapsed, ~1.2 min left)
+  300/3000  score per seed: 0.37 0.08 0.19 0.40 0.31 0.30 0.21 0.00 0.30 0.17  (0.1 min elapsed, ~1.1 min left)
+  350/3000  score per seed: 0.27 0.02 0.13 0.39 0.20 0.45 0.00 0.06 0.40 0.25  (0.1 min elapsed, ~1.0 min left)
+  400/3000  score per seed: 0.41 0.12 0.20 0.36 0.30 0.32 0.33 0.40 0.00 0.13  (0.1 min elapsed, ~0.9 min left)
+  450/3000  score per seed: 0.42 0.06 0.26 0.39 0.01 0.36 0.32 0.29 0.25 0.23  (0.2 min elapsed, ~0.9 min left)
+  500/3000  score per seed: 0.48 0.24 0.39 0.49 0.22 0.30 0.11 0.40 0.23 0.17  (0.2 min elapsed, ~0.8 min left)
+  550/3000  score per seed: 0.42 0.00 0.37 0.00 0.62 0.44 0.12 0.47 0.00 0.25  (0.2 min elapsed, ~0.8 min left)
+  600/3000  score per seed: 0.27 0.06 0.43 0.55 0.45 0.45 0.21 0.33 0.40 0.15  (0.2 min elapsed, ~0.7 min left)
+  650/3000  score per seed: 0.49 0.05 0.24 0.24 0.19 0.56 0.35 0.40 0.42 0.24  (0.2 min elapsed, ~0.7 min left)
+  700/3000  score per seed: 0.47 0.20 0.45 0.00 0.27 0.40 0.29 0.16 0.25 0.16  (0.2 min elapsed, ~0.7 min left)
+  750/3000  score per seed: 0.46 0.04 0.00 0.29 0.14 0.39 0.36 0.43 0.42 0.25  (0.2 min elapsed, ~0.7 min left)
+  800/3000  score per seed: 0.36 0.13 0.00 0.50 0.44 0.62 0.39 0.43 0.39 0.16  (0.2 min elapsed, ~0.6 min left)
+  850/3000  score per seed: 0.41 0.09 0.20 0.00 0.15 0.35 0.43 0.14 0.24 0.23  (0.2 min elapsed, ~0.6 min left)
+  900/3000  score per seed: 0.42 0.25 0.35 0.48 0.46 0.68 0.14 0.40 0.44 0.20  (0.3 min elapsed, ~0.6 min left)
+  950/3000  score per seed: 0.45 0.24 0.45 0.41 0.37 0.46 0.36 0.42 0.26 0.25  (0.3 min elapsed, ~0.6 min left)
+ 1000/3000  score per seed: 0.44 0.12 0.44 0.41 0.39 0.37 0.00 0.34 0.38 0.22  (0.3 min elapsed, ~0.5 min left)
+ 1050/3000  score per seed: 0.36 0.21 0.40 0.39 0.16 0.37 0.23 0.31 0.46 0.25  (0.3 min elapsed, ~0.5 min left)
+ 1100/3000  score per seed: 0.37 0.24 0.44 0.40 0.28 0.44 0.38 0.39 0.36 0.25  (0.3 min elapsed, ~0.5 min left)
+ 1150/3000  score per seed: 0.40 0.24 0.46 0.50 0.31 0.43 0.41 0.27 0.32 0.21  (0.3 min elapsed, ~0.5 min left)
+ 1200/3000  score per seed: 0.00 0.18 0.10 0.48 0.42 0.33 0.37 0.40 0.30 0.25  (0.3 min elapsed, ~0.5 min left)
+ 1250/3000  score per seed: 0.47 0.13 0.00 0.49 0.00 0.45 0.09 0.45 0.42 0.25  (0.3 min elapsed, ~0.5 min left)
+ 1300/3000  score per seed: 0.40 0.25 0.37 0.47 0.00 0.39 0.40 0.43 0.40 0.22  (0.3 min elapsed, ~0.4 min left)
+ 1350/3000  score per seed: 0.36 0.12 0.00 0.48 0.18 0.44 0.04 0.28 0.43 0.25  (0.3 min elapsed, ~0.4 min left)
+ 1400/3000  score per seed: 0.32 0.25 0.45 0.37 0.45 0.37 0.27 0.20 0.38 0.25  (0.4 min elapsed, ~0.4 min left)
+ 1450/3000  score per seed: 0.17 0.24 0.43 0.00 0.41 0.27 0.35 0.32 0.20 0.24  (0.4 min elapsed, ~0.4 min left)
+ 1500/3000  score per seed: 0.43 0.24 0.46 0.42 0.30 0.39 0.36 0.39 0.27 0.25  (0.4 min elapsed, ~0.4 min left)
+ 1550/3000  score per seed: 0.36 0.21 0.38 0.38 0.40 0.36 0.25 0.39 0.39 0.23  (0.4 min elapsed, ~0.4 min left)
+ 1600/3000  score per seed: 0.37 0.19 0.00 0.44 0.37 0.46 0.28 0.00 0.37 0.24  (0.4 min elapsed, ~0.3 min left)
+ 1650/3000  score per seed: 0.29 0.20 0.00 0.44 0.22 0.39 0.36 0.35 0.31 0.24  (0.4 min elapsed, ~0.3 min left)
+ 1700/3000  score per seed: 0.43 0.21 0.51 0.49 0.39 0.39 0.00 0.10 0.39 0.24  (0.4 min elapsed, ~0.3 min left)
+ 1750/3000  score per seed: 0.29 0.25 0.42 0.40 0.37 0.45 0.32 0.02 0.27 0.24  (0.4 min elapsed, ~0.3 min left)
+ 1800/3000  score per seed: 0.46 0.12 0.46 0.48 0.25 0.47 0.31 0.08 0.38 0.24  (0.4 min elapsed, ~0.3 min left)
+ 1850/3000  score per seed: 0.43 0.09 0.38 0.43 0.37 0.46 0.36 0.36 0.37 0.24  (0.5 min elapsed, ~0.3 min left)
+ 1900/3000  score per seed: 0.40 0.11 0.42 0.36 0.25 0.48 0.47 0.27 0.53 0.25  (0.5 min elapsed, ~0.3 min left)
+ 1950/3000  score per seed: 0.36 0.25 0.42 0.40 0.42 0.36 0.33 0.43 0.27 0.07  (0.5 min elapsed, ~0.3 min left)
+ 2000/3000  score per seed: 0.46 0.25 0.47 0.50 0.41 0.51 0.34 0.45 0.12 0.45  (0.5 min elapsed, ~0.2 min left)
+ 2050/3000  score per seed: 0.01 0.25 0.01 0.45 0.18 0.27 0.51 0.37 0.33 0.36  (0.5 min elapsed, ~0.2 min left)
+ 2100/3000  score per seed: 0.39 0.22 0.41 0.40 0.25 0.45 0.01 0.22 0.18 0.40  (0.5 min elapsed, ~0.2 min left)
+ 2150/3000  score per seed: 0.33 0.24 0.42 0.01 0.39 0.24 0.37 0.29 0.39 0.21  (0.5 min elapsed, ~0.2 min left)
+ 2200/3000  score per seed: 0.43 0.24 0.26 0.39 0.43 0.43 0.15 0.30 0.43 0.45  (0.5 min elapsed, ~0.2 min left)
+ 2250/3000  score per seed: 0.00 0.25 0.37 0.45 0.38 0.35 0.15 0.34 0.35 0.01  (0.5 min elapsed, ~0.2 min left)
+ 2300/3000  score per seed: 0.00 0.23 0.36 0.52 0.43 0.39 0.30 0.38 0.50 0.32  (0.5 min elapsed, ~0.2 min left)
+ 2350/3000  score per seed: 0.29 0.25 0.17 0.29 0.38 0.41 0.48 0.29 0.54 0.42  (0.6 min elapsed, ~0.2 min left)
+ 2400/3000  score per seed: 0.42 0.23 0.45 0.39 0.39 0.46 0.42 0.42 0.52 0.28  (0.6 min elapsed, ~0.1 min left)
+ 2450/3000  score per seed: 0.32 0.23 0.34 0.36 0.32 0.45 0.00 0.34 0.43 0.39  (0.6 min elapsed, ~0.1 min left)
+ 2500/3000  score per seed: 0.47 0.25 0.09 0.49 0.40 0.38 0.37 0.36 0.36 0.21  (0.6 min elapsed, ~0.1 min left)
+ 2550/3000  score per seed: 0.35 0.24 0.54 0.47 0.47 0.41 0.28 0.41 0.35 0.42  (0.6 min elapsed, ~0.1 min left)
+ 2600/3000  score per seed: 0.48 0.25 0.43 0.42 0.45 0.42 0.43 0.38 0.27 0.39  (0.6 min elapsed, ~0.1 min left)
+ 2650/3000  score per seed: 0.03 0.25 0.43 0.44 0.38 0.42 0.52 0.35 0.41 0.35  (0.6 min elapsed, ~0.1 min left)
+ 2700/3000  score per seed: 0.46 0.20 0.39 0.45 0.45 0.48 0.39 0.30 0.39 0.43  (0.6 min elapsed, ~0.1 min left)
+ 2750/3000  score per seed: 0.30 0.23 0.41 0.23 0.23 0.41 0.46 0.22 0.39 0.22  (0.6 min elapsed, ~0.1 min left)
+ 2800/3000  score per seed: 0.31 0.25 0.42 0.44 0.39 0.41 0.36 0.48 0.11 0.34  (0.7 min elapsed, ~0.0 min left)
+ 2850/3000  score per seed: 0.43 0.23 0.42 0.52 0.43 0.40 0.46 0.22 0.36 0.14  (0.7 min elapsed, ~0.0 min left)
+ 2900/3000  score per seed: 0.45 0.25 0.60 0.42 0.42 0.46 0.40 0.22 0.43 0.33  (0.7 min elapsed, ~0.0 min left)
+ 2950/3000  score per seed: 0.37 0.20 0.57 0.42 0.35 0.36 0.40 0.39 0.49 0.31  (0.7 min elapsed, ~0.0 min left)
+ 2999/3000  score per seed: 0.44 0.25 0.30 0.47 0.33 0.32 0.07 0.13 0.46 0.30  (0.7 min elapsed, ~0.0 min left)
+seed 10: held-out score 0.415  -> results/3col_scripted/gd_n6_s10_steps3000
+saved results/3col_scripted/gd_n6_s10_steps3000/trajectories.png
+seed 11: held-out score 0.182  -> results/3col_scripted/gd_n6_s11_steps3000
+saved results/3col_scripted/gd_n6_s11_steps3000/trajectories.png
+seed 12: held-out score 0.281  -> results/3col_scripted/gd_n6_s12_steps3000
+saved results/3col_scripted/gd_n6_s12_steps3000/trajectories.png
+seed 13: held-out score 0.444  -> results/3col_scripted/gd_n6_s13_steps3000
+saved results/3col_scripted/gd_n6_s13_steps3000/trajectories.png
+seed 14: held-out score 0.370  -> results/3col_scripted/gd_n6_s14_steps3000
+saved results/3col_scripted/gd_n6_s14_steps3000/trajectories.png
+seed 15: held-out score 0.393  -> results/3col_scripted/gd_n6_s15_steps3000
+saved results/3col_scripted/gd_n6_s15_steps3000/trajectories.png
+seed 16: held-out score 0.044  -> results/3col_scripted/gd_n6_s16_steps3000
+saved results/3col_scripted/gd_n6_s16_steps3000/trajectories.png
+seed 17: held-out score 0.374  -> results/3col_scripted/gd_n6_s17_steps3000
+saved results/3col_scripted/gd_n6_s17_steps3000/trajectories.png
+seed 18: held-out score 0.438  -> results/3col_scripted/gd_n6_s18_steps3000
+saved results/3col_scripted/gd_n6_s18_steps3000/trajectories.png
+seed 19: held-out score 0.372  -> results/3col_scripted/gd_n6_s19_steps3000
+saved results/3col_scripted/gd_n6_s19_steps3000/trajectories.png
