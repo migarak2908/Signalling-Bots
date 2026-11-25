@@ -8,8 +8,8 @@ The receiver starts at 0.75 and must stop at the landmark of that colour; the la
 at random in the zone 2–3. The receiver can sense the landmarks' colours, and how close the signaller is (up to a
 distance of 1) — that is the only way information can pass. A trial lasts 30 time units.
 
-**Runs.** Each run trains from a different random start (its seed; "s4" is seed 4). The GA evolves a population of
-400 genomes for 3000 generations (unless stated), testing each on 4 random layouts × every colour per generation.
+**Runs.** Each run trains from a different random start. The GA evolves a population of
+400 genomes for 3000 generations (unless stated), testing each on 4 random layouts × every colour as target per generation.
 At the end, the run's best genome is tested on 100 fixed held-out layouts × every colour; those are the numbers below.
 **Mean** and **best** in the tables are across runs.
 
