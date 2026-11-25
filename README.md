@@ -1,7 +1,7 @@
 # Signalling-Bots
 Evolving simple neural agents to communicate about a target they can’t see, in a task that rules out “pushing” solutions and forces arbitrary, categorical signals, without giving them a communication channel.
 
-## Results so far
+## Experiment
 
 **Setup.** Two agents on a line, each a small CTRNN. The signaller stays in the zone 0–1 and knows the target colour.
 The receiver starts at 0.75 and must stop at the landmark of that colour; the landmarks (one per colour) are placed
