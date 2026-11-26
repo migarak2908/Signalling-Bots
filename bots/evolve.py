@@ -38,7 +38,8 @@ def evolve(cfg: Config, seeds: list[int], log_every: int = 50):
         return key, next_generation(mutate_key, pop, scores, cfg), scores
 
     keys, pops = jax.vmap(start)(jnp.array(seeds))
-    step = jax.jit(jax.vmap(generation))
+    print("compiling...", flush=True)
+    step = jax.jit(jax.vmap(generation)).lower(keys, pops).compile()
 
     best, mean = [], []
     clock = time.time()
@@ -69,11 +70,11 @@ def save_run(out: Path, cfg: Config, genome: jax.Array, history: dict):
     plot_trajectories(out, genome, cfg)
 
 
-def main(n_colours: int, seeds: list[int], generations: int):
-    cfg = Config(n_colours=n_colours, generations=generations)
+def main(n_colours: int, n_extra: int, seeds: list[int], generations: int):
+    cfg = Config(n_colours=n_colours, n_extra=n_extra, generations=generations)
     genomes, history = evolve(cfg, seeds)
     for i, seed in enumerate(seeds):
-        out = Path("results") / f"{n_colours}col" / f"s{seed}_g{generations}"
+        out = Path("results") / f"{n_colours}col_n{cfg.n_neurons}" / f"s{seed}_g{generations}"
         save_run(out, cfg, genomes[i], {k: v[i] for k, v in history.items()})
 
 
@@ -82,7 +83,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--colours", type=int, choices=[2, 3], default=Config.n_colours)
+    parser.add_argument("--extra", type=int, default=Config.n_extra)
     parser.add_argument("--seeds", type=int, nargs="+", default=[0])
     parser.add_argument("--generations", type=int, default=Config.generations)
     args = parser.parse_args()
-    main(args.colours, args.seeds, args.generations)
+    main(args.colours, args.extra, args.seeds, args.generations)

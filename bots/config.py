@@ -22,7 +22,8 @@ class Config:
     success_radius: float = 0.1
 
     # Network
-    motor_neuron: int = -1  # -1 is the last neuron, which gets the proximity input
+    n_extra: int = 0  # neurons with no sensor input, after the proximity neuron
+    motor_neuron: int = -1  # last neuron: proximity if n_extra is 0, else the last extra neuron
     param_range: tuple[float, float] = (-10.0, 10.0)  # weights, biases and input weights
     tau_range: tuple[float, float] = (0.5, 10.0)
 
@@ -48,13 +49,17 @@ class Config:
         return round(self.score_time / self.dt)
 
     @property
-    def n_neurons(self) -> int:
+    def n_inputs(self) -> int:
         return self.n_colours + 1
+
+    @property
+    def n_neurons(self) -> int:
+        return self.n_inputs + self.n_extra
 
     @property
     def params_per_agent(self) -> int:
         n = self.n_neurons
-        return n * n + 3 * n
+        return n * n + 2 * n + self.n_inputs
 
     @property
     def genome_size(self) -> int:

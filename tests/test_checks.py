@@ -15,18 +15,21 @@ CFG = Config(n_colours=3)
 def test_genome_length():
     assert Config(n_colours=3).genome_size == 56
     assert Config(n_colours=2).genome_size == 36
+    assert Config(n_colours=2, n_extra=1).genome_size == 54
+    assert Config(n_colours=3, n_extra=1).genome_size == 78
 
 
 def no_recurrence(cfg):
     """One agent's params with every neuron-to-neuron weight and bias 0, input weights 10."""
     n = cfg.n_neurons
-    genes = jnp.concatenate([jnp.zeros(n * n + 2 * n), jnp.ones(n)])
+    genes = jnp.concatenate([jnp.zeros(n * n + 2 * n), jnp.ones(cfg.n_inputs)])
     return unpack(genes, cfg)
 
 
 @pytest.mark.parametrize("n_colours", [2, 3])
-def test_wiring(n_colours):
-    cfg = Config(n_colours=n_colours)
+@pytest.mark.parametrize("n_extra", [0, 1, 2])
+def test_wiring(n_colours, n_extra):
+    cfg = Config(n_colours=n_colours, n_extra=n_extra)
     params = no_recurrence(cfg)
     landmarks = 2.0 + 0.5 * jnp.arange(n_colours)
     far, prox_neuron = 5.0, n_colours

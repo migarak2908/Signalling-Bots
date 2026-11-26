@@ -10,7 +10,7 @@ class Params(NamedTuple):
     w: jax.Array  # (n, n), w[j, i] is the weight from neuron j to neuron i
     theta: jax.Array
     tau: jax.Array
-    g: jax.Array  # g[i] is the weight of neuron i's one input
+    g: jax.Array  # g[i] is the weight of input i, which feeds neuron i
 
 
 def scale(genes: jax.Array, bounds: tuple[float, float]) -> jax.Array:
@@ -35,7 +35,8 @@ def split_genome(genome: jax.Array, cfg: Config) -> tuple[jax.Array, jax.Array]:
 
 
 def step(p: Params, y: jax.Array, inputs: jax.Array, cfg: Config) -> jax.Array:
-    dy = -y + jax.nn.sigmoid(y + p.theta) @ p.w + p.g * inputs
+    external = jnp.pad(p.g * inputs, (0, cfg.n_extra))
+    dy = -y + jax.nn.sigmoid(y + p.theta) @ p.w + external
     return y + cfg.dt / p.tau * dy
 
 

@@ -1,25 +1,35 @@
-"""python -m bots.summarize 3col"""
+"""%run bots/summarize.py 2col"""
 
 import json
 import sys
 from pathlib import Path
 
+COLOURS = ["red", "green", "blue"]
+TESTS = {"success": "normal", "success_small_dt": "dt = 0.01", "success_no_signal": "no signal"}
 
-def fmt(values):
-    return " / ".join(f"{v:.2f}" for v in values)
+
+def seed_of(path: Path) -> int:
+    return int(path.parent.name.split("_")[0][1:])
 
 
 def main(folder: str):
-    header = ["run", "success", "success dt=0.01", "no signal", "solved"]
-    rows = []
-    for path in sorted(Path("results", folder).glob("*/results.json")):
-        r = json.loads(path.read_text())
-        rows.append([path.parent.name, fmt(r["success"]), fmt(r["success_small_dt"]), fmt(r["success_no_signal"]), str(r["solved"])])
+    paths = sorted(Path("results", folder).glob("s*/results.json"), key=seed_of)
+    runs = [(seed_of(p), json.loads(p.read_text())) for p in paths]
+    colours = COLOURS[: len(runs[0][1]["success"])]
+    width = 7 * len(colours) + 3
 
-    widths = [max(len(row[i]) for row in rows + [header]) for i in range(len(header))]
-    for row in [header] + rows:
-        print("  ".join(cell.ljust(w) for cell, w in zip(row, widths)))
-    print(f"\nsolved: {sum(row[-1] == 'True' for row in rows)} of {len(rows)}")
+    print("Held-out success: % of trials where the receiver ends within 0.1 of the target\n")
+    print(" " * 6 + "".join(name.ljust(width) for name in TESTS.values()))
+    print("seed  " + "".join("".join(f"{c:>6} " for c in colours) + "   " for _ in TESTS) + "solved")
+    for seed, r in runs:
+        cells = "".join("".join(f"{v:6.0%} " for v in r[key]) + "   " for key in TESTS)
+        print(f"{seed:>4}  {cells}{'yes' if r['solved'] else 'no'}")
+
+    print(f"\nsolved: {sum(r['solved'] for _, r in runs)} of {len(runs)} seeds\n")
+    print("normal:    best genome on 100 held-out layouts, each run with every target colour")
+    print("dt = 0.01: the same test with a 10x smaller time step")
+    print("no signal: the signaller isn't told the colour; should drop to about chance")
+    print("solved:    at least 90% for every colour, in both normal and dt = 0.01")
 
 
 if __name__ == "__main__":
