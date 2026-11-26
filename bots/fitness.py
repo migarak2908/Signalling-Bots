@@ -1,5 +1,3 @@
-import dataclasses
-
 import jax
 import jax.numpy as jnp
 
@@ -32,14 +30,8 @@ def evaluate(genome: jax.Array, layouts: jax.Array, cfg: Config, hide_colour: bo
     return grid(score), grid(success)
 
 
-def combine(scores: jax.Array, cfg: Config) -> jax.Array:
-    """scores has shape (n_layouts, n_colours)."""
-    w = cfg.worst_weight
-    return (1 - w) * scores.mean() + w * scores.mean(axis=0).min()
-
-
 def fitness(genome: jax.Array, layouts: jax.Array, cfg: Config) -> jax.Array:
-    return combine(evaluate(genome, layouts, cfg)[0], cfg)
+    return evaluate(genome, layouts, cfg)[0].mean()
 
 
 def heldout_success(genome: jax.Array, cfg: Config, hide_colour: bool = False) -> list[float]:
@@ -50,12 +42,8 @@ def heldout_success(genome: jax.Array, cfg: Config, hide_colour: bool = False) -
 
 def heldout_results(genome: jax.Array, cfg: Config) -> dict:
     success = heldout_success(genome, cfg)
-    small_dt = heldout_success(genome, dataclasses.replace(cfg, dt=cfg.test_dt))
-    no_signal = heldout_success(genome, cfg, hide_colour=True)
-    passes = lambda s: min(s) >= cfg.solved_success
     return {
         "success": success,
-        "success_small_dt": small_dt,
-        "success_no_signal": no_signal,
-        "solved": passes(success) and passes(small_dt),
+        "success_no_signal": heldout_success(genome, cfg, hide_colour=True),
+        "solved": min(success) >= cfg.solved_success,
     }

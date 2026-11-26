@@ -75,7 +75,7 @@ def save_run(out: Path, cfg: Config, genome: jax.Array, history: dict):
 
 
 def run_folder(cfg: Config) -> str:
-    options = {"pair": cfg.motor == "pair", "fullinput": cfg.full_input, "plastic": cfg.plastic, "worst": cfg.worst_weight > 0}
+    options = {"pair": cfg.motor == "pair", "fullinput": cfg.full_input, "plastic": cfg.plastic}
     return f"{cfg.n_colours}col_n{cfg.n_neurons}" + "".join(f"_{name}" for name, on in options.items() if on)
 
 
@@ -95,7 +95,6 @@ if __name__ == "__main__":
     parser.add_argument("--full-input", action="store_true")
     parser.add_argument("--motor", choices=["single", "pair"], default=Config.motor)
     parser.add_argument("--plastic", action="store_true")
-    parser.add_argument("--worst", action="store_true", help="fitness = 0.5 * mean + 0.5 * worst colour")
     parser.add_argument("--seeds", type=int, nargs="+", default=[0])
     parser.add_argument("--generations", type=int, default=Config.generations)
     args = parser.parse_args()
@@ -105,7 +104,6 @@ if __name__ == "__main__":
         full_input=args.full_input,
         motor=args.motor,
         plastic=args.plastic,
-        worst_weight=0.5 if args.worst else 0.0,
         generations=args.generations,
     )
     main(cfg, args.seeds)

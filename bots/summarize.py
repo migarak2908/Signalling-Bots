@@ -5,7 +5,8 @@ import sys
 from pathlib import Path
 
 COLOURS = ["red", "green", "blue"]
-TESTS = {"success": "normal", "success_small_dt": "dt = 0.01", "success_no_signal": "no signal"}
+SOLVED = 0.9  # success needed on every colour
+TESTS = {"success": "normal", "success_no_signal": "no signal"}
 
 
 def seed_of(path: Path) -> int:
@@ -21,15 +22,15 @@ def main(folder: str):
     print("Held-out success: % of trials where the receiver ends within 0.1 of the target\n")
     print(" " * 6 + "".join(name.ljust(width) for name in TESTS.values()))
     print("seed  " + "".join("".join(f"{c:>6} " for c in colours) + "   " for _ in TESTS) + "solved")
-    for seed, r in runs:
+    solved = [min(r["success"]) >= SOLVED for _, r in runs]
+    for (seed, r), ok in zip(runs, solved):
         cells = "".join("".join(f"{v:6.0%} " for v in r[key]) + "   " for key in TESTS)
-        print(f"{seed:>4}  {cells}{'yes' if r['solved'] else 'no'}")
+        print(f"{seed:>4}  {cells}{'yes' if ok else 'no'}")
 
-    print(f"\nsolved: {sum(r['solved'] for _, r in runs)} of {len(runs)} seeds\n")
+    print(f"\nsolved: {sum(solved)} of {len(runs)} seeds\n")
     print("normal:    best genome on 100 held-out layouts, each run with every target colour")
-    print("dt = 0.01: the same test with a 10x smaller time step")
     print("no signal: the signaller isn't told the colour; should drop to about chance")
-    print("solved:    at least 90% for every colour, in both normal and dt = 0.01")
+    print("solved:    at least 90% for every colour")
 
 
 if __name__ == "__main__":

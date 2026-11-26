@@ -36,12 +36,10 @@ class Config:
     mutation_std: float = 0.1
     generations: int = 5000
     layouts_per_order: int = 10
-    worst_weight: float = 0.0  # fitness = (1 - w) * mean + w * worst colour's mean
 
     # Testing
     test_layouts: int = 100
     test_seed: int = 12345
-    test_dt: float = 0.01
     solved_success: float = 0.9
 
     @property
