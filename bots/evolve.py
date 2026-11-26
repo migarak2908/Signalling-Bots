@@ -10,6 +10,7 @@ import jax.numpy as jnp
 import numpy as np
 
 from bots.config import Config
+from bots.ctrnn import split_genome, unpack
 from bots.env import training_layouts
 from bots.fitness import fitness, heldout_results
 from bots.plots import plot_fitness, plot_trajectories
@@ -60,6 +61,9 @@ def evolve(cfg: Config, seeds: list[int], log_every: int = 50):
 def save_run(out: Path, cfg: Config, genome: jax.Array, history: dict):
     out.mkdir(parents=True, exist_ok=True)
     results = heldout_results(genome, cfg)
+    if cfg.plastic:
+        agents = zip(["signaller", "receiver"], split_genome(genome, cfg))
+        results["rule"] = {name: dict(zip(["eta", "A", "B", "C", "D"], unpack(genes, cfg).rule.tolist())) for name, genes in agents}
     (out / "config.json").write_text(json.dumps(dataclasses.asdict(cfg), indent=2))
     (out / "results.json").write_text(json.dumps(results, indent=2))
     np.save(out / "best_genome.npy", np.asarray(genome))
@@ -70,11 +74,12 @@ def save_run(out: Path, cfg: Config, genome: jax.Array, history: dict):
     plot_trajectories(out, genome, cfg)
 
 
-def main(n_colours: int, n_extra: int, seeds: list[int], generations: int):
-    cfg = Config(n_colours=n_colours, n_extra=n_extra, generations=generations)
+def main(n_colours: int, n_extra: int, plastic: bool, seeds: list[int], generations: int):
+    cfg = Config(n_colours=n_colours, n_extra=n_extra, plastic=plastic, generations=generations)
+    folder = f"{n_colours}col_n{cfg.n_neurons}" + ("_plastic" if plastic else "")
     genomes, history = evolve(cfg, seeds)
     for i, seed in enumerate(seeds):
-        out = Path("results") / f"{n_colours}col_n{cfg.n_neurons}" / f"s{seed}_g{generations}"
+        out = Path("results") / folder / f"s{seed}_g{generations}"
         save_run(out, cfg, genomes[i], {k: v[i] for k, v in history.items()})
 
 
@@ -84,7 +89,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--colours", type=int, choices=[2, 3], default=Config.n_colours)
     parser.add_argument("--extra", type=int, default=Config.n_extra)
+    parser.add_argument("--plastic", action="store_true")
     parser.add_argument("--seeds", type=int, nargs="+", default=[0])
     parser.add_argument("--generations", type=int, default=Config.generations)
     args = parser.parse_args()
-    main(args.colours, args.extra, args.seeds, args.generations)
+    main(args.colours, args.extra, args.plastic, args.seeds, args.generations)

@@ -5,9 +5,10 @@ import jax.numpy as jnp
 import pytest
 
 from bots.config import Config
-from bots.ctrnn import step, unpack
+from bots.ctrnn import hebbian, step, unpack
 from bots.env import sense, training_layouts
 from bots.fitness import score
+from bots.rollout import trial
 
 CFG = Config(n_colours=3)
 
@@ -35,7 +36,7 @@ def test_wiring(n_colours, n_extra):
     far, prox_neuron = 5.0, n_colours
 
     def changed(inputs):
-        y = step(params, jnp.zeros(cfg.n_neurons), inputs, cfg)
+        y = step(params, params.w, jnp.zeros(cfg.n_neurons), inputs, cfg)
         return set(jnp.flatnonzero(y).tolist())
 
     for colour in range(n_colours):
@@ -74,3 +75,44 @@ def test_every_order_three_times():
     sorted_x = jnp.sort(layouts, axis=1)
     assert (sorted_x >= lo).all() and (sorted_x <= hi).all()
     assert (jnp.diff(sorted_x, axis=1) >= CFG.min_gap - 1e-6).all()
+
+
+def test_plastic_genome_length():
+    assert Config(n_colours=2, plastic=True).genome_size == 46
+    assert Config(n_colours=3, plastic=True).genome_size == 66
+    assert Config(n_colours=2, n_extra=1, plastic=True).genome_size == 64
+
+
+def test_plastic_with_eta_zero_matches_static():
+    static, plastic = Config(n_colours=3), Config(n_colours=3, plastic=True)
+    agents = jax.random.uniform(jax.random.key(1), (2, static.params_per_agent), minval=-1, maxval=1)
+    rule = jnp.array([-1.0, 0.7, -0.3, 0.5, 0.9])  # eta gene -1 -> eta 0
+    plastic_genome = jnp.concatenate([agents[0], rule, agents[1], rule])
+    landmarks = jnp.array([2.0, 2.5, 3.0])
+    for colour in range(3):
+        a = trial(agents.ravel(), landmarks, colour, static)
+        b = trial(plastic_genome, landmarks, colour, plastic)
+        assert (a == b).all()
+
+
+ACTIVE = jnp.array([1.0, 0.0, 1.0, 0.0])  # only neurons 0 and 2 active
+
+
+def changed_weights(rule):
+    w = hebbian(jnp.array(rule), jnp.zeros((4, 4)), ACTIVE, CFG)
+    return {tuple(ji) for ji in jnp.argwhere(w != 0).tolist()}
+
+
+def test_hebbian_term_orientation():
+    assert changed_weights([1.0, 1.0, 0.0, 0.0, 0.0]) == {(0, 0), (0, 2), (2, 0), (2, 2)}
+
+
+def test_presynaptic_term_changes_rows():
+    assert changed_weights([1.0, 0.0, 1.0, 0.0, 0.0]) == {(j, i) for j in (0, 2) for i in range(4)}
+
+
+def test_weights_stay_in_range():
+    for d in (1.0, -1.0):
+        rule = jnp.array([1.0, 1.0, d, d, d])
+        w = jax.lax.fori_loop(0, 1000, lambda _, w: hebbian(rule, w, ACTIVE, CFG), jnp.full((4, 4), 9.0 * d))
+        assert (jnp.abs(w) <= 10.0).all()
