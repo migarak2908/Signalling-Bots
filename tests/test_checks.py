@@ -23,7 +23,7 @@ def test_genome_length():
 def no_recurrence(cfg):
     """One agent's params with every neuron-to-neuron weight and bias 0, input weights 10."""
     n = cfg.n_neurons
-    genes = jnp.concatenate([jnp.zeros(n * n + 2 * n), jnp.ones(cfg.n_inputs)])
+    genes = jnp.concatenate([jnp.zeros(n * n + 2 * n), jnp.ones(cfg.n_input_weights)])
     return unpack(genes, cfg)
 
 
@@ -116,3 +116,17 @@ def test_weights_stay_in_range():
         rule = jnp.array([1.0, 1.0, d, d, d])
         w = jax.lax.fori_loop(0, 1000, lambda _, w: hebbian(rule, w, ACTIVE, CFG), jnp.full((4, 4), 9.0 * d))
         assert (jnp.abs(w) <= 10.0).all()
+
+
+def test_full_input_genome_length():
+    assert Config(n_colours=2, n_extra=1, full_input=True).genome_size == 72
+    assert Config(n_colours=3, full_input=True).genome_size == 80
+
+
+@pytest.mark.parametrize("n_extra", [0, 1])
+def test_full_input_reaches_every_neuron(n_extra):
+    cfg = Config(n_colours=2, n_extra=n_extra, full_input=True)
+    params = no_recurrence(cfg)
+    for k in range(cfg.n_inputs):
+        y = step(params, params.w, jnp.zeros(cfg.n_neurons), jax.nn.one_hot(k, cfg.n_inputs), cfg)
+        assert (y != 0).all()

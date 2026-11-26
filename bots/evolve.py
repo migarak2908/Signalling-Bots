@@ -74,9 +74,9 @@ def save_run(out: Path, cfg: Config, genome: jax.Array, history: dict):
     plot_trajectories(out, genome, cfg)
 
 
-def main(n_colours: int, n_extra: int, plastic: bool, seeds: list[int], generations: int):
-    cfg = Config(n_colours=n_colours, n_extra=n_extra, plastic=plastic, generations=generations)
-    folder = f"{n_colours}col_n{cfg.n_neurons}" + ("_plastic" if plastic else "")
+def main(n_colours: int, n_extra: int, full_input: bool, plastic: bool, seeds: list[int], generations: int):
+    cfg = Config(n_colours=n_colours, n_extra=n_extra, full_input=full_input, plastic=plastic, generations=generations)
+    folder = f"{n_colours}col_n{cfg.n_neurons}" + ("_fullinput" if full_input else "") + ("_plastic" if plastic else "")
     genomes, history = evolve(cfg, seeds)
     for i, seed in enumerate(seeds):
         out = Path("results") / folder / f"s{seed}_g{generations}"
@@ -89,8 +89,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--colours", type=int, choices=[2, 3], default=Config.n_colours)
     parser.add_argument("--extra", type=int, default=Config.n_extra)
+    parser.add_argument("--full-input", action="store_true")
     parser.add_argument("--plastic", action="store_true")
     parser.add_argument("--seeds", type=int, nargs="+", default=[0])
     parser.add_argument("--generations", type=int, default=Config.generations)
     args = parser.parse_args()
-    main(args.colours, args.extra, args.plastic, args.seeds, args.generations)
+    main(args.colours, args.extra, args.full_input, args.plastic, args.seeds, args.generations)

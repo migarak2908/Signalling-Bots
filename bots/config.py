@@ -26,6 +26,7 @@ class Config:
     motor_neuron: int = -1  # last neuron: proximity if n_extra is 0, else the last extra neuron
     param_range: tuple[float, float] = (-10.0, 10.0)  # weights, biases and input weights
     tau_range: tuple[float, float] = (0.5, 10.0)
+    full_input: bool = False  # every sensor feeds every neuron, instead of one sensor per neuron
     plastic: bool = False  # within-trial weight changes: eta, A, B, C, D genes per agent
 
     # Evolution
@@ -60,7 +61,11 @@ class Config:
     @property
     def params_per_agent(self) -> int:
         n = self.n_neurons
-        return n * n + 2 * n + self.n_inputs + 5 * self.plastic
+        return n * n + 2 * n + self.n_input_weights + 5 * self.plastic
+
+    @property
+    def n_input_weights(self) -> int:
+        return self.n_inputs * self.n_neurons if self.full_input else self.n_inputs
 
     @property
     def genome_size(self) -> int:

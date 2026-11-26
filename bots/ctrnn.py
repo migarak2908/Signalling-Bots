@@ -10,7 +10,7 @@ class Params(NamedTuple):
     w: jax.Array  # (n, n), w[j, i] is the weight from neuron j to neuron i
     theta: jax.Array
     tau: jax.Array
-    g: jax.Array  # g[i] is the weight of input i, which feeds neuron i
+    g: jax.Array  # one-to-one: g[i] is input i to neuron i. full_input: g[k, i] is input k to neuron i
     rule: jax.Array  # [eta, A, B, C, D] if plastic, else empty
 
 
@@ -21,12 +21,12 @@ def scale(genes: jax.Array, bounds: tuple[float, float]) -> jax.Array:
 
 def unpack(genes: jax.Array, cfg: Config) -> Params:
     n = cfg.n_neurons
-    w, theta, tau, g, rule = jnp.split(genes, [n * n, n * n + n, n * n + 2 * n, n * n + 2 * n + cfg.n_inputs])
+    w, theta, tau, g, rule = jnp.split(genes, [n * n, n * n + n, n * n + 2 * n, n * n + 2 * n + cfg.n_input_weights])
     return Params(
         w=scale(w.reshape(n, n), cfg.param_range),
         theta=scale(theta, cfg.param_range),
         tau=scale(tau, cfg.tau_range),
-        g=scale(g, cfg.param_range),
+        g=scale(g.reshape(cfg.n_inputs, n) if cfg.full_input else g, cfg.param_range),
         rule=jnp.concatenate([scale(rule[:1], (0.0, 1.0)), rule[1:]]),
     )
 
@@ -37,7 +37,7 @@ def split_genome(genome: jax.Array, cfg: Config) -> tuple[jax.Array, jax.Array]:
 
 
 def step(p: Params, w: jax.Array, y: jax.Array, inputs: jax.Array, cfg: Config) -> jax.Array:
-    external = jnp.pad(p.g * inputs, (0, cfg.n_extra))
+    external = inputs @ p.g if cfg.full_input else jnp.pad(p.g * inputs, (0, cfg.n_extra))
     dy = -y + jax.nn.sigmoid(y + p.theta) @ w + external
     return y + cfg.dt / p.tau * dy
 
