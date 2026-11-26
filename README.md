@@ -19,7 +19,8 @@ another landmark. It is averaged over the last 2 time units. Layouts are redrawn
 **Evolution.** Population 200, 5000 generations, the top 5% are kept and mutated (Gaussian noise 0.1), no crossover.
 
 **Testing.** The best genome of each run is tested on 100 held-out layouts with each target colour. Success means
-ending within 0.1 of the target. A run is solved if success is at least 0.9 for every colour. The signal check repeats the test with the signaller's colour inputs set to 0.
+ending within 0.1 of the target. A run is solved if success is at least 0.9 for every colour, both at dt = 0.1 and
+dt = 0.01. The signal check repeats the test with the signaller's colour inputs set to 0.
 
 ## Running
 

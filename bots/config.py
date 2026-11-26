@@ -40,6 +40,7 @@ class Config:
     # Testing
     test_layouts: int = 100
     test_seed: int = 12345
+    test_dt: float = 0.01
     solved_success: float = 0.9
 
     @property

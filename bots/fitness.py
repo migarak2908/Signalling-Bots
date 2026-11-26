@@ -1,3 +1,5 @@
+import dataclasses
+
 import jax
 import jax.numpy as jnp
 
@@ -42,8 +44,11 @@ def heldout_success(genome: jax.Array, cfg: Config, hide_colour: bool = False) -
 
 def heldout_results(genome: jax.Array, cfg: Config) -> dict:
     success = heldout_success(genome, cfg)
+    small_dt = heldout_success(genome, dataclasses.replace(cfg, dt=cfg.test_dt))
+    passes = lambda s: min(s) >= cfg.solved_success
     return {
         "success": success,
+        "success_small_dt": small_dt,
         "success_no_signal": heldout_success(genome, cfg, hide_colour=True),
-        "solved": min(success) >= cfg.solved_success,
+        "solved": passes(success) and passes(small_dt),
     }
