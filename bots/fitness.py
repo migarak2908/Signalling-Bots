@@ -22,7 +22,7 @@ def success(positions: jax.Array, landmark_x: jax.Array, colour: jax.Array, cfg:
 
 def evaluate(genome: jax.Array, layouts: jax.Array, cfg: Config, hide_colour: bool = False):
     """Scores and successes, each shape (n_layouts, n_colours)."""
-    positions = all_trials(genome, layouts, cfg, hide_colour)
+    positions = all_trials(genome, layouts, cfg, hide_colour, last=cfg.score_steps)
     colours = jnp.arange(cfg.n_colours)
 
     def grid(fn):

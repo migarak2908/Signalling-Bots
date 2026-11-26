@@ -16,6 +16,7 @@ class Config:
     dt: float = 0.1
     trial_time: float = 30.0
     score_time: float = 2.0
+    unroll: int = 10  # time steps per loop round; higher is usually faster on GPU
 
     # Scoring
     score_range: float = 0.5

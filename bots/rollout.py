@@ -6,8 +6,10 @@ from bots.ctrnn import learn, split_genome, step, unpack, velocity
 from bots.env import sense
 
 
-def trial(genome: jax.Array, landmark_x: jax.Array, colour: jax.Array, cfg: Config, hide_colour: bool = False) -> jax.Array:
-    """Positions after every step, shape (n_steps, 2): [signaller, receiver]."""
+def trial(
+    genome: jax.Array, landmark_x: jax.Array, colour: jax.Array, cfg: Config, hide_colour: bool = False, last: int | None = None
+) -> jax.Array:
+    """Positions after every step, shape (n_steps, 2): [signaller, receiver]. With `last`, only the last steps are kept."""
     sig, rec = (unpack(genes, cfg) for genes in split_genome(genome, cfg))
     target = jax.nn.one_hot(colour, cfg.n_colours) * (not hide_colour)
 
@@ -25,12 +27,17 @@ def trial(genome: jax.Array, landmark_x: jax.Array, colour: jax.Array, cfg: Conf
 
     y0 = jnp.zeros(cfg.n_neurons)
     start = (jnp.asarray(cfg.signaller_start), jnp.asarray(cfg.receiver_start), y0, y0, sig.w, rec.w)
-    _, positions = jax.lax.scan(body, start, length=cfg.n_steps)
+    keep = cfg.n_steps if last is None else last
+    unrecorded = lambda carry, _: (body(carry, _)[0], None)
+    carry, _ = jax.lax.scan(unrecorded, start, length=cfg.n_steps - keep, unroll=cfg.unroll)
+    _, positions = jax.lax.scan(body, carry, length=keep, unroll=cfg.unroll)
     return positions
 
 
-def all_trials(genome: jax.Array, layouts: jax.Array, cfg: Config, hide_colour: bool = False) -> jax.Array:
-    """Every layout with every target colour. Shape (n_layouts, n_colours, n_steps, 2)."""
-    run = lambda landmark_x, colour: trial(genome, landmark_x, colour, cfg, hide_colour)
+def all_trials(
+    genome: jax.Array, layouts: jax.Array, cfg: Config, hide_colour: bool = False, last: int | None = None
+) -> jax.Array:
+    """Every layout with every target colour. Shape (n_layouts, n_colours, steps, 2)."""
+    run = lambda landmark_x, colour: trial(genome, landmark_x, colour, cfg, hide_colour, last)
     colours = jnp.arange(cfg.n_colours)
     return jax.vmap(jax.vmap(run, (None, 0)), (0, None))(layouts, colours)
