@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import pytest
 
 from bots.config import Config
-from bots.ctrnn import hebbian, step, unpack
+from bots.ctrnn import hebbian, step, unpack, velocity
 from bots.env import sense, training_layouts
 from bots.fitness import combine, score
 from bots.rollout import trial
@@ -29,8 +29,9 @@ def no_recurrence(cfg):
 
 @pytest.mark.parametrize("n_colours", [2, 3])
 @pytest.mark.parametrize("n_extra", [0, 1, 2])
-def test_wiring(n_colours, n_extra):
-    cfg = Config(n_colours=n_colours, n_extra=n_extra)
+@pytest.mark.parametrize("motor", ["single", "pair"])
+def test_wiring(n_colours, n_extra, motor):
+    cfg = Config(n_colours=n_colours, n_extra=n_extra, motor=motor)
     params = no_recurrence(cfg)
     landmarks = 2.0 + 0.5 * jnp.arange(n_colours)
     far, prox_neuron = 5.0, n_colours
@@ -124,8 +125,9 @@ def test_full_input_genome_length():
 
 
 @pytest.mark.parametrize("n_extra", [0, 1])
-def test_full_input_reaches_every_neuron(n_extra):
-    cfg = Config(n_colours=2, n_extra=n_extra, full_input=True)
+@pytest.mark.parametrize("motor", ["single", "pair"])
+def test_full_input_reaches_every_neuron(n_extra, motor):
+    cfg = Config(n_colours=2, n_extra=n_extra, motor=motor, full_input=True)
     params = no_recurrence(cfg)
     for k in range(cfg.n_inputs):
         y = step(params, params.w, jnp.zeros(cfg.n_neurons), jax.nn.one_hot(k, cfg.n_inputs), cfg)
@@ -138,3 +140,18 @@ def test_worst_colour_fitness():
     assert combine(one_colour, Config(n_colours=2, worst_weight=0.5)) == pytest.approx(0.25)
     uneven = jnp.array([[1.0, 0.6], [0.8, 0.2]])  # colour means 0.9 and 0.4
     assert combine(uneven, Config(n_colours=2, worst_weight=0.5)) == pytest.approx(0.5 * 0.65 + 0.5 * 0.4)
+
+
+def test_pair_genome_length():
+    assert Config(n_colours=2, motor="pair").genome_size == 2 * (25 + 10 + 3)
+    assert Config(n_colours=3, motor="pair").genome_size == 2 * (36 + 12 + 4)
+    assert Config(n_colours=2, n_extra=1, motor="pair", full_input=True).genome_size == 2 * (36 + 12 + 18)
+
+
+def test_pair_velocity():
+    cfg = Config(n_colours=2, motor="pair")
+    params = no_recurrence(cfg)
+    y = jnp.zeros(cfg.n_neurons)
+    assert velocity(params, y, cfg) == 0.0
+    assert velocity(params, y.at[-2:].set(jnp.array([20.0, -20.0])), cfg) > 0.99
+    assert velocity(params, y.at[-2:].set(jnp.array([-20.0, 20.0])), cfg) < -0.99

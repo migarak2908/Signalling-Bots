@@ -37,7 +37,7 @@ def split_genome(genome: jax.Array, cfg: Config) -> tuple[jax.Array, jax.Array]:
 
 
 def step(p: Params, w: jax.Array, y: jax.Array, inputs: jax.Array, cfg: Config) -> jax.Array:
-    external = inputs @ p.g if cfg.full_input else jnp.pad(p.g * inputs, (0, cfg.n_extra))
+    external = inputs @ p.g if cfg.full_input else jnp.pad(p.g * inputs, (0, cfg.n_neurons - cfg.n_inputs))
     dy = -y + jax.nn.sigmoid(y + p.theta) @ w + external
     return y + cfg.dt / p.tau * dy
 
@@ -54,5 +54,8 @@ def learn(p: Params, w: jax.Array, y: jax.Array, cfg: Config) -> jax.Array:
 
 
 def velocity(p: Params, y: jax.Array, cfg: Config) -> jax.Array:
+    if cfg.motor == "pair":
+        right, left = jax.nn.sigmoid(y[-2:] + p.theta[-2:])
+        return right - left
     m = cfg.motor_neuron
     return 2 * jax.nn.sigmoid(y[m] + p.theta[m]) - 1

@@ -23,7 +23,8 @@ class Config:
 
     # Network
     n_extra: int = 0  # neurons with no sensor input, after the proximity neuron
-    motor_neuron: int = -1  # last neuron: proximity if n_extra is 0, else the last extra neuron
+    motor: str = "single"  # "single": one neuron drives the motor. "pair": two added motor neurons, right minus left
+    motor_neuron: int = -1  # single mode: last neuron, i.e. proximity if n_extra is 0, else the last extra neuron
     param_range: tuple[float, float] = (-10.0, 10.0)  # weights, biases and input weights
     tau_range: tuple[float, float] = (0.5, 10.0)
     full_input: bool = False  # every sensor feeds every neuron, instead of one sensor per neuron
@@ -57,7 +58,11 @@ class Config:
 
     @property
     def n_neurons(self) -> int:
-        return self.n_inputs + self.n_extra
+        return self.n_inputs + self.n_extra + self.n_motors
+
+    @property
+    def n_motors(self) -> int:
+        return 2 if self.motor == "pair" else 0
 
     @property
     def params_per_agent(self) -> int:
