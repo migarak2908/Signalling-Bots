@@ -1,0 +1,15 @@
+{
+  "success": [
+    0.0,
+    1.0
+  ],
+  "success_small_dt": [
+    0.0,
+    0.0
+  ],
+  "success_no_signal": [
+    0.0,
+    1.0
+  ],
+  "solved": false
+}
