@@ -32,8 +32,14 @@ def evaluate(genome: jax.Array, layouts: jax.Array, cfg: Config, hide_colour: bo
     return grid(score), grid(success)
 
 
+def combine(scores: jax.Array, cfg: Config) -> jax.Array:
+    """scores has shape (n_layouts, n_colours)."""
+    w = cfg.worst_weight
+    return (1 - w) * scores.mean() + w * scores.mean(axis=0).min()
+
+
 def fitness(genome: jax.Array, layouts: jax.Array, cfg: Config) -> jax.Array:
-    return evaluate(genome, layouts, cfg)[0].mean()
+    return combine(evaluate(genome, layouts, cfg)[0], cfg)
 
 
 def heldout_success(genome: jax.Array, cfg: Config, hide_colour: bool = False) -> list[float]:

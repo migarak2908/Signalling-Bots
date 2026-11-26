@@ -74,12 +74,15 @@ def save_run(out: Path, cfg: Config, genome: jax.Array, history: dict):
     plot_trajectories(out, genome, cfg)
 
 
-def main(n_colours: int, n_extra: int, full_input: bool, plastic: bool, seeds: list[int], generations: int):
-    cfg = Config(n_colours=n_colours, n_extra=n_extra, full_input=full_input, plastic=plastic, generations=generations)
-    folder = f"{n_colours}col_n{cfg.n_neurons}" + ("_fullinput" if full_input else "") + ("_plastic" if plastic else "")
+def run_folder(cfg: Config) -> str:
+    options = {"fullinput": cfg.full_input, "plastic": cfg.plastic, "worst": cfg.worst_weight > 0}
+    return f"{cfg.n_colours}col_n{cfg.n_neurons}" + "".join(f"_{name}" for name, on in options.items() if on)
+
+
+def main(cfg: Config, seeds: list[int]):
     genomes, history = evolve(cfg, seeds)
     for i, seed in enumerate(seeds):
-        out = Path("results") / folder / f"s{seed}_g{generations}"
+        out = Path("results") / run_folder(cfg) / f"s{seed}_g{cfg.generations}"
         save_run(out, cfg, genomes[i], {k: v[i] for k, v in history.items()})
 
 
@@ -91,7 +94,16 @@ if __name__ == "__main__":
     parser.add_argument("--extra", type=int, default=Config.n_extra)
     parser.add_argument("--full-input", action="store_true")
     parser.add_argument("--plastic", action="store_true")
+    parser.add_argument("--worst", action="store_true", help="fitness = 0.5 * mean + 0.5 * worst colour")
     parser.add_argument("--seeds", type=int, nargs="+", default=[0])
     parser.add_argument("--generations", type=int, default=Config.generations)
     args = parser.parse_args()
-    main(args.colours, args.extra, args.full_input, args.plastic, args.seeds, args.generations)
+    cfg = Config(
+        n_colours=args.colours,
+        n_extra=args.extra,
+        full_input=args.full_input,
+        plastic=args.plastic,
+        worst_weight=0.5 if args.worst else 0.0,
+        generations=args.generations,
+    )
+    main(cfg, args.seeds)

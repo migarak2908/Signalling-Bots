@@ -7,7 +7,7 @@ import pytest
 from bots.config import Config
 from bots.ctrnn import hebbian, step, unpack
 from bots.env import sense, training_layouts
-from bots.fitness import score
+from bots.fitness import combine, score
 from bots.rollout import trial
 
 CFG = Config(n_colours=3)
@@ -130,3 +130,11 @@ def test_full_input_reaches_every_neuron(n_extra):
     for k in range(cfg.n_inputs):
         y = step(params, params.w, jnp.zeros(cfg.n_neurons), jax.nn.one_hot(k, cfg.n_inputs), cfg)
         assert (y != 0).all()
+
+
+def test_worst_colour_fitness():
+    one_colour = jnp.array([[1.0, 0.0]] * 6)  # always right for red, never for green
+    assert combine(one_colour, Config(n_colours=2)) == pytest.approx(0.5)
+    assert combine(one_colour, Config(n_colours=2, worst_weight=0.5)) == pytest.approx(0.25)
+    uneven = jnp.array([[1.0, 0.6], [0.8, 0.2]])  # colour means 0.9 and 0.4
+    assert combine(uneven, Config(n_colours=2, worst_weight=0.5)) == pytest.approx(0.5 * 0.65 + 0.5 * 0.4)
