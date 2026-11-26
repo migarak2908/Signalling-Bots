@@ -30,4 +30,12 @@ python -m bots.summarize 3col
 python -m pytest tests
 ```
 
-Runs are saved to `results/<n>col/s<seed>_g<generations>/`. `colab.ipynb` runs them on a Colab GPU.
+Runs are saved to `results/<n>col/s<seed>_g<generations>/`.
+
+On Colab (GPU runtime), in a new notebook:
+
+```
+!git clone https://github.com/migarak2908/Signalling-Bots
+%cd Signalling-Bots
+!python -u -m bots.evolve --colours 2 --seeds 0 1 2 3 4 5 6 7 8 9 | tee stage_a.log
+```
