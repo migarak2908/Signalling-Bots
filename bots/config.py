@@ -16,20 +16,20 @@ class Config:
     dt: float = 0.1
     trial_time: float = 30.0
     score_time: float = 2.0
-    unroll: int = 10  # time steps per loop round; higher is usually faster on GPU
+    unroll: int = 10  # steps per loop iteration, only affects speed
 
     # Scoring
     score_range: float = 0.5
     success_radius: float = 0.1
 
     # Network
-    n_extra: int = 0  # neurons with no sensor input, after the proximity neuron
-    motor: str = "single"  # "single": one neuron drives the motor. "pair": two added motor neurons, right minus left
-    motor_neuron: int = -1  # single mode: last neuron, i.e. proximity if n_extra is 0, else the last extra neuron
+    n_extra: int = 0  # neurons without a sensor, after the proximity neuron
+    motor: str = "single"  # "single": the last neuron sets the velocity. "pair": two added motor neurons, right - left
+    motor_neuron: int = -1
     param_range: tuple[float, float] = (-10.0, 10.0)  # weights, biases and input weights
     tau_range: tuple[float, float] = (0.5, 10.0)
-    full_input: bool = False  # every sensor feeds every neuron, instead of one sensor per neuron
-    plastic: bool = False  # within-trial weight changes: eta, A, B, C, D genes per agent
+    full_input: bool = False  # every sensor feeds every neuron
+    plastic: bool = False  # Hebbian weight changes within a trial, rule genes eta, A, B, C, D
 
     # Evolution
     pop_size: int = 200
@@ -37,8 +37,8 @@ class Config:
     mutation_std: float = 0.1
     generations: int = 5000
     layouts_per_order: int = 10
-    init_range: float = 1.0  # starting weight, bias and input weight genes in ±init_range; tau and rule genes in ±1
-    centre: bool = False  # starting biases centre-crossing: theta_i = -sum_j w_ji / 2
+    init_range: float = 1.0  # starting weight, bias and input weight genes are drawn from [-init_range, init_range]
+    centre: bool = False  # starting biases are centre-crossing: theta_i = -sum_j w_ji / 2
 
     # Testing
     test_layouts: int = 100

@@ -19,6 +19,11 @@ def scale(genes: jax.Array, bounds: tuple[float, float]) -> jax.Array:
     return lo + (genes + 1) / 2 * (hi - lo)
 
 
+def unscale(values: jax.Array, bounds: tuple[float, float]) -> jax.Array:
+    lo, hi = bounds
+    return (values - lo) / (hi - lo) * 2 - 1
+
+
 def unpack(genes: jax.Array, cfg: Config) -> Params:
     n = cfg.n_neurons
     w, theta, tau, g, rule = jnp.split(genes, [n * n, n * n + n, n * n + 2 * n, n * n + 2 * n + cfg.n_input_weights])

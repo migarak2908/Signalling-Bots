@@ -1,11 +1,11 @@
-"""%run bots/summarize.py 2col"""
+"""%run bots/summarize.py 2col_n5_pair_fullinput"""
 
 import json
 import sys
 from pathlib import Path
 
 COLOURS = ["red", "green", "blue"]
-SOLVED = 0.9  # success needed on every colour
+SOLVED = 0.9
 TESTS = {"success": "normal", "success_small_dt": "dt = 0.01", "success_no_signal": "no signal"}
 
 
@@ -22,7 +22,7 @@ def main(folder: str):
     print("Held-out success: % of trials where the receiver ends within 0.1 of the target\n")
     print(" " * 6 + "".join(name.ljust(width) for name in TESTS.values()))
     print("seed  " + "".join("".join(f"{c:>6} " for c in colours) + "   " for _ in TESTS) + "solved")
-    solved = [min(r["success"]) >= SOLVED and min(r["success_small_dt"]) >= SOLVED for _, r in runs]
+    solved = [min(r["success"] + r["success_small_dt"]) >= SOLVED for _, r in runs]
     for (seed, r), ok in zip(runs, solved):
         cells = "".join("".join(f"{v:6.0%} " for v in r[key]) + "   " for key in TESTS)
         print(f"{seed:>4}  {cells}{'yes' if ok else 'no'}")
