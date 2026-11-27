@@ -37,6 +37,8 @@ class Config:
     mutation_std: float = 0.1
     generations: int = 5000
     layouts_per_order: int = 10
+    init_range: float = 1.0  # starting weight, bias and input weight genes in ±init_range; tau and rule genes in ±1
+    centre: bool = False  # starting biases centre-crossing: theta_i = -sum_j w_ji / 2
 
     # Testing
     test_layouts: int = 100

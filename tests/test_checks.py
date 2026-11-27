@@ -5,8 +5,9 @@ import jax.numpy as jnp
 import pytest
 
 from bots.config import Config
-from bots.ctrnn import hebbian, step, unpack, velocity
+from bots.ctrnn import hebbian, split_genome, step, unpack, velocity
 from bots.env import sense, training_layouts
+from bots.evolve import initial_population
 from bots.fitness import score
 from bots.rollout import trial
 
@@ -138,6 +139,25 @@ def test_pair_genome_length():
     assert Config(n_colours=2, motor="pair").genome_size == 2 * (25 + 10 + 3)
     assert Config(n_colours=3, motor="pair").genome_size == 2 * (36 + 12 + 4)
     assert Config(n_colours=2, n_extra=1, motor="pair", full_input=True).genome_size == 2 * (36 + 12 + 18)
+
+
+@pytest.mark.parametrize("plastic", [False, True])
+def test_init_range(plastic):
+    cfg = Config(n_colours=2, plastic=plastic, init_range=0.3)
+    agents = initial_population(jax.random.key(0), cfg).reshape(-1, cfg.params_per_agent)
+    n = cfg.n_neurons
+    tau, rule = slice(n * n + n, n * n + 2 * n), slice(n * n + 2 * n + cfg.n_input_weights, None)
+    narrow = jnp.ones(cfg.params_per_agent, bool).at[tau].set(False).at[rule].set(False)
+    assert (jnp.abs(agents[:, narrow]) <= 0.3).all()
+    assert jnp.abs(agents[:, ~narrow]).max() > 0.9
+
+
+def test_centre_crossing():
+    cfg = Config(n_colours=2, init_range=0.3, centre=True)
+    for genes in initial_population(jax.random.key(0), cfg)[:5]:
+        for agent in split_genome(genes, cfg):
+            p = unpack(agent, cfg)
+            assert jnp.allclose(p.theta, -p.w.sum(axis=0) / 2, atol=1e-5)
 
 
 def test_pair_velocity():
