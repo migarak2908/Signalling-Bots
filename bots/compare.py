@@ -46,7 +46,7 @@ def plot_fitness(ax, folder: str):
     for seed in best:
         ax.plot(gens, seed, color=BLUE, lw=0.8, alpha=0.35)
     ax.plot(gens, np.median(best, axis=0), color="black", lw=2)
-    ax.set_ylim(0.4, 1.0)
+    ax.set_ylim(0.3, 1.0)
     ax.set_xlabel("generation")
     ax.set_title(folder, fontsize=8)
 

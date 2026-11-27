@@ -60,3 +60,44 @@ import sys
 for name in [m for m in sys.modules if m.startswith("bots")]:
     del sys.modules[name]
 ```
+
+## Preliminary results
+
+10 seeds per setup, 5000 generations. 2-colour runs have 5 neurons: the base network with `--extra 2`, the others with
+the options named.
+
+![Overview](figures/overview.png)
+
+Top: held-out success on each seed's worse colour, with the number of solved seeds. Bottom: best training fitness, one
+thin line per seed and the median in black.
+
+- With the base network no seed solves 2 colours. Most settle at 0.5 fitness: the receiver always goes to one colour.
+- The pair motor with full input solves 7 of 10, with or without plasticity. Removing either one drops it to 1 or 2.
+- Many failed seeds sit at about 0.75 fitness and 44% or 56% on one colour. Red is on the left in 56 of the 100
+  held-out layouts, so these seem to use position for one colour (e.g. "the upper landmark") instead of its colour.
+- No 3-colour seed is solved yet. The best (seed 4) reaches 90%, 82% and 77%.
+
+The trajectory plots show the first four held-out layouts (rows) with each target colour (columns). The target is the
+solid line, the other landmarks are dashed. Grey is the signaller, black the receiver.
+
+**Base network, 2 colours (seed 0).** The signaller does the same thing for both colours and the receiver always ends
+at green.
+
+![2col_n5 seed 0](figures/2col_n5_s0.png)
+
+**Pair motor and full input, 2 colours (seed 0, solved).** The signaller moves next to the receiver for red and away
+for green. The receiver stops at the first landmark it reaches and moves on if it is the wrong colour.
+
+![2col_n5_pair_fullinput seed 0](figures/2col_n5_pair_fullinput_s0.png)
+
+**Full input and plasticity, 2 colours (seed 3, 100% red, 56% green).** The signaller moves to the receiver at once for
+red and after about 5 time units for green. The receiver overshoots and comes back down. For red it finds the red
+landmark, but for green it stops at the upper landmark, which is wrong whenever green is the lower one (top row).
+
+![2col_n5_fullinput_plastic seed 3](figures/2col_n5_fullinput_plastic_s3.png)
+
+**Pair motor, full input and plasticity, 3 colours (seed 4).** The signal seems to be timing: the signaller moves away
+for blue, and towards the receiver for red and green, at about 7 and 10 time units. The receiver mostly finds the
+target, but drifts off green late in some trials and stops just short of blue in others.
+
+![3col_n6_pair_fullinput_plastic seed 4](figures/3col_n6_pair_fullinput_plastic_s4.png)
